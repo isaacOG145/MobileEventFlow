@@ -8,6 +8,7 @@ import LoadingScreen from '../screens/LoadingScreen';
 import UserTabs from './UserTabs';
 import CheckerTabs from './CheckerTabs';
 import AdminScreen from '../screens/AdminScreen';
+import InscriptionDetails from '../screens/InscriptionDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ export default function AppNavigator() {
           // Pantalla por defecto o de error si el rol no es reconocido
           <Stack.Screen name="Login" component={LoginScreen} />
         )}
+        
         <Stack.Screen name="adminScreen" component={AdminScreen}/>
       </Stack.Navigator>
     </NavigationContainer>

@@ -3,6 +3,7 @@ import { Colors, Spacing, fontSizes, ModalStyles } from "../config/Styles";
 import { ScrollView } from 'react-native-gesture-handler';
 import { View, Text, StyleSheet } from "react-native";
 import { getActivitiesForUser, getUserProfile } from "../config/Api";
+import { useNavigation } from '@react-navigation/native';
 import MessageModal from "../components/MessageModal";
 import CustomHeader from "../components/CustomHeader";
 import ActivityCard from "../components/ActivityCard";
@@ -14,7 +15,7 @@ export default function Myinscriptions() {
     const [showNotification, setShowNotification] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
-    const [selectedActivityId, setSelectedActivityId] = useState("");
+    const navigation = useNavigation();
 
     const loadData = async () => {
         try {
@@ -44,6 +45,10 @@ export default function Myinscriptions() {
         setShowNotification(true);
     };
 
+    const handleDetails = (activityId) => {
+        navigation.navigate('MyInscriptionDetails', { id: activityId })
+    }
+
     return (
         <View style={styles.container}>
             <CustomHeader />
@@ -59,10 +64,7 @@ export default function Myinscriptions() {
                         <ActivityCard
                             key={index}
                             activity={activity}
-                            onPressBlue={() => {
-                                setSelectedActivityId(activity.id); 
-                                setShowModal(true);
-                            }}
+                            onPressBlue={() => handleDetails(activity.id)}
                             textBlue="Mostrar detalles"
                         />
                     ))
@@ -97,13 +99,13 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     loadingText: {
-      textAlign: 'center',
-      marginTop: 20,
-      fontSize: 16,
-      color: '#666',
+        textAlign: 'center',
+        marginTop: 20,
+        fontSize: 16,
+        color: '#666',
     },
     cover: {
-      ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFillObject,
     }
 });
 

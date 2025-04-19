@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image} from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { Spacing, Colors, fontSizes, BorderRadius } from "../config/Styles";
 import { getUserActivityInscription, getUserProfile } from "../config/Api";
 import { formatDate, formatTime } from "../utils/DateUtils";
+import { useNavigation } from '@react-navigation/native'
 import QRCode from "react-native-qrcode-svg";
 import CustomHeader from "../components/CustomHeader";
 import MessageModal from "../components/MessageModal";
@@ -11,6 +12,7 @@ import PurpleButton from "../components/PurpleButton";
 
 export default function InscriptionDetails({ route }) {
     const { id } = route.params;
+    const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [inscription, setInscription] = useState("");
     const [showNotification, setShowNotification] = useState(false);
@@ -82,6 +84,11 @@ export default function InscriptionDetails({ route }) {
             userName: `${inscription.user.name} ${inscription.user.lastName}`,
         });
     };
+
+    const returnPage = () => {
+        navigation.goBack(); 
+      };
+      
 
     return (
         <View style={styles.mainContainer}>
@@ -157,7 +164,7 @@ export default function InscriptionDetails({ route }) {
 
 
                         <View style={styles.buttonSpacing}>
-                            <BlueButton>
+                            <BlueButton onPress={returnPage}>
                                 Cerrar
                             </BlueButton>
                         </View>

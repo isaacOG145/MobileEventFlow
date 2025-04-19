@@ -35,6 +35,35 @@ export const getUserProfile = async () => {
   return response.data; // contiene userId, email, expiration, role
 };
 
+export const getInscriptions = async (userId) => {
+  try{
+    const response = await api.get(`/user-activities/findByUser/${userId}`);
+    
+    if (response.data.type === 'ERROR') {
+      throw new Error(response.data.message); 
+    }
+
+    return response.data;  
+
+  }catch(error){
+    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+  }
+}
+
+export const getActivitiesForUser = async (userId) =>{
+  try{
+    const response = await api.get(`/activity/users/${userId}/activities`);
+    
+    if (response.data.type === 'ERROR') {
+      throw new Error(response.data.message); 
+    }
+
+    return response.data;  
+
+  }catch(error){
+    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+  }
+}
 
 export const getWorkshopsForUser = async (userId) => {
   try {

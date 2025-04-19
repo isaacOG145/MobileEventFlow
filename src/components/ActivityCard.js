@@ -58,7 +58,7 @@ export default function ActivityCard({
                 ) : (
                     <>
                         <View style={[styles.badge, styles.backgroundPurple]}>
-                            <Text style={styles.badgeText}>Evento asociado: {activity.associatedEvent}</Text>
+                            <Text style={styles.badgeText}>Evento asociado: {activity.associatedEvent || activity.fromActivity.name}</Text>
                         </View>
 
                         <View style={styles.rowContainer}>
@@ -66,17 +66,20 @@ export default function ActivityCard({
                                 <Text style={styles.badgeText}>Hora: {formatTime(activity.time)}</Text>
                             </View>
                             <View style={[styles.badge, styles.backgroundBlue]}>
-                                <Text style={styles.badgeText}>Cupo: {activity.totalQuota}</Text>
+                                <Text style={styles.badgeText}>Cupo: {activity.totalQuota || activity.quota}</Text>
                             </View>
-                            {activity.availableQuota != 0 ? (
-                                <View style={[styles.badge, styles.backgroundGreen]}>
-                                    <Text style={styles.badgeText}>Disponible: {activity.availableQuota}</Text>
-                                </View>
-                            ) : (
-                                <View style={[styles.badge, styles.backgroundRed]}>
-                                    <Text style={styles.badgeText}>Lleno</Text>
-                                </View>
-                            )}
+                            {activity.availableQuota != null ? (
+                                activity.availableQuota !== 0 ? (
+                                    <View style={[styles.badge, styles.backgroundGreen]}>
+                                        <Text style={styles.badgeText}>Disponible: {activity.availableQuota}</Text>
+                                    </View>
+                                ) : (
+                                    <View style={[styles.badge, styles.backgroundRed]}>
+                                        <Text style={styles.badgeText}>Lleno</Text>
+                                    </View>
+                                )
+                            ) : null}
+
                         </View>
                     </>
                 )}
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
     descriptionText: {
         fontSize: fontSizes.normal,
         color: Colors.textSecondary,
-       
+
     },
     buttonsContainer: {
         marginTop: Spacing.margin.medium,

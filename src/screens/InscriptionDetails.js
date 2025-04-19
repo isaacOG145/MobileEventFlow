@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { Spacing, Colors, fontSizes, BorderRadius } from "../config/Styles";
-import { getUserActivityInscription, getUserProfile } from "../config/Api";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions} from "react-native";
+import { Spacing, Colors, fontSizes, BorderRadius, ModalStyles } from "../config/Styles";
+import { getUserActivityInscription, getUserProfile, cancelInscription } from "../config/Api";
 import { formatDate, formatTime } from "../utils/DateUtils";
 import { useNavigation } from '@react-navigation/native'
+import CancelInscription from "../modals/CancelInscription";
 import QRCode from "react-native-qrcode-svg";
 import CustomHeader from "../components/CustomHeader";
 import MessageModal from "../components/MessageModal";
@@ -19,6 +20,10 @@ export default function InscriptionDetails({ route }) {
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
     const [isEventToday, setIsEventToday] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedInscriptionId, setSelectedInscriptionId] = useState(null);
+    const [isRegistering, setIsRegistering] = useState(false);
+    const { height, width } = Dimensions.get('window');
 
     const loadData = async () => {
         try {
@@ -39,9 +44,38 @@ export default function InscriptionDetails({ route }) {
         }
     };
 
+    const handleCancel = async (inscriptionId) => {
+        try {
+            setIsRegistering(true);
+            await cancelInscription(inscriptionId);
+            setTimeout(() => {
+                showMessage('success', '¡Cancelación exitosa!');
+                setShowModal(false);
+                returnPage();
+            }, 1500)
+
+            loadData();
+        } catch (error) {
+            if (error.response) {
+                console.log(error);
+                const { text, type } = error.response.data;
+                showMessage(type.toLowerCase(), text);
+                setShowModal(false);
+            } else {
+                showMessage('error', error.message);
+                setShowModal(false);
+            }
+        } finally {
+            setIsRegistering(false);
+            setShowModal(false);
+        }
+    }
+
+
+
     useEffect(() => {
         loadData();
-    }, [id]);
+    }, []);
 
     useEffect(() => {
         if (inscription?.activity) {
@@ -86,9 +120,9 @@ export default function InscriptionDetails({ route }) {
     };
 
     const returnPage = () => {
-        navigation.goBack(); 
-      };
-      
+        navigation.goBack();
+    };
+
 
     return (
         <View style={styles.mainContainer}>
@@ -169,14 +203,42 @@ export default function InscriptionDetails({ route }) {
                             </BlueButton>
                         </View>
 
-                        <PurpleButton>Cancelar inscripción</PurpleButton>
+                        <PurpleButton onPress={() => {
+                            setSelectedInscriptionId(inscription.id);
+                            setShowModal(true);
+                        }}>Cancelar inscripción</PurpleButton>
                     </View>
                 ) : (
                     <Text style={styles.noDataText}>No se encontraron datos de inscripción</Text>
                 )}
-
-
             </View>
+            {/* Modal embebido directamente en la vista */}
+            {showModal && (
+                <View style={[ModalStyles.overlay, styles.cover]}>
+                    <TouchableOpacity
+                        style={ModalStyles.overlayTouchable}
+                        activeOpacity={1}
+                        onPress={() => setShowModal(false)}
+                    />
+
+                    <View style={[ModalStyles.container, {
+                        maxHeight: height * 0.7,
+                        width: width * 0.9
+                    }]}>
+
+
+
+                        <View style={ModalStyles.content}>
+                            <CancelInscription
+                                inscriptionId={selectedInscriptionId}
+                                onCancel={() => !isRegistering && setShowModal(false)}
+                                onConfirm={handleCancel}
+                                isProcessing={isRegistering}
+                            />
+                        </View>
+                    </View>
+                </View>
+            )}
             <MessageModal
                 show={showNotification}
                 message={modalMessage}
@@ -274,4 +336,7 @@ const styles = StyleSheet.create({
         color: Colors.textDark,
         fontWeight: 'bold',
     },
+    cover: {
+        ...StyleSheet.absoluteFillObject,
+    }
 });

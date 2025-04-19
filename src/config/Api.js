@@ -139,5 +139,39 @@ export const registerToWorkshop = async (userId, activityId) => {
   }
 };
 
+export const cancelInscription = async (inscriptionId) => {
+  try{
+
+    const response = await api.put('/user-activities/cancel',{
+      id: inscriptionId
+    });
+    console.log(inscriptionId)
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+      // Lanza directamente el objeto de respuesta para que el handler lo reciba tal cual
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+    return response.data;
+  }catch (error) {
+    // Si el backend ya mandó un Message, lo propagamos tal cual
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+      // Error inesperado
+      const fallback = {
+        text: 'Error al cancelar la inscripcion',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
+  }
+}
+
 
 export default api;

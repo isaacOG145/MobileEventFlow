@@ -24,7 +24,7 @@ api.interceptors.request.use(
 );
 
 export const getUserProfile = async () => {
-  const token = await getToken(); // tu función para leer el JWT
+  const token = await getToken(); 
 
   const response = await api.get('/profile', {
     headers: {
@@ -35,20 +35,33 @@ export const getUserProfile = async () => {
   return response.data; // contiene userId, email, expiration, role
 };
 
-export const getInscriptions = async (userId) => {
-  try{
-    const response = await api.get(`/user-activities/findByUser/${userId}`);
-    
-    if (response.data.type === 'ERROR') {
-      throw new Error(response.data.message); 
+export const getUserActivityInscription = async (userId, activityId) => {
+  try {
+    // Validación básica de parámetros
+    if (!userId) {
+      throw new Error('Falta el usuario');
+    }else if(!activityId){
+      throw new Error('Falta la actividad');
     }
 
-    return response.data;  
+    const response = await api.get('/user-activities/findByUserAndActivity', {
+      params: {
+        userId: 28,
+        activityId: 1
+      }
+    });
 
-  }catch(error){
-    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+    if (!response.data || response.data.type !== 'SUCCESS') {
+      throw new Error(response.data?.message || 'Respuesta inválida del servidor');
+    }
+
+    return response.data.body;
+  } catch (error) {
+    console.error('Error en getUserActivityInscription:', error);
+    throw new Error(error.response?.data?.message || error.message || 'Error al obtener la inscripción');
   }
-}
+};
+
 
 export const getActivitiesForUser = async (userId) =>{
   try{

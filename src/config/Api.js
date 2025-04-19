@@ -24,7 +24,7 @@ api.interceptors.request.use(
 );
 
 export const getUserProfile = async () => {
-  const token = await getToken(); 
+  const token = await getToken();
 
   const response = await api.get('/profile', {
     headers: {
@@ -37,43 +37,57 @@ export const getUserProfile = async () => {
 
 export const getUserActivityInscription = async (userId, activityId) => {
   try {
-    // Validación básica de parámetros
     if (!userId) {
       throw new Error('Falta el usuario');
-    }else if(!activityId){
+    } else if (!activityId) {
       throw new Error('Falta la actividad');
     }
 
     const response = await api.get('/user-activities/findByUserAndActivity', {
-      params: {
-        userId: 28,
-        activityId: 1
-      }
+      params: { userId, activityId }
     });
 
-    if (!response.data || response.data.type !== 'SUCCESS') {
-      throw new Error(response.data?.message || 'Respuesta inválida del servidor');
+    const { data } = response;
+
+    // Validar la estructura de la respuesta
+    if (!data || data.type !== 'SUCCESS' || !data.result) {
+      throw new Error(data?.text || 'Respuesta inválida del servidor');
     }
 
-    return response.data.body;
+    // Devolver el resultado
+    return data.result;
   } catch (error) {
     console.error('Error en getUserActivityInscription:', error);
-    throw new Error(error.response?.data?.message || error.message || 'Error al obtener la inscripción');
+
+    // Mejor manejo de errores
+    if (error.response) {
+      // Error de la API
+      throw new Error(error.response.data?.text ||
+        error.response.data?.message ||
+        'Error al obtener la inscripción');
+    } else if (error.request) {
+      // La solicitud fue hecha pero no hubo respuesta
+      throw new Error('No se recibió respuesta del servidor');
+    } else {
+      // Error al configurar la solicitud
+      throw new Error(error.message || 'Error al configurar la solicitud');
+    }
   }
 };
 
 
-export const getActivitiesForUser = async (userId) =>{
-  try{
+
+export const getActivitiesForUser = async (userId) => {
+  try {
     const response = await api.get(`/activity/users/${userId}/activities`);
-    
+
     if (response.data.type === 'ERROR') {
-      throw new Error(response.data.message); 
+      throw new Error(response.data.message);
     }
 
-    return response.data;  
+    return response.data;
 
-  }catch(error){
+  } catch (error) {
     throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
   }
 }

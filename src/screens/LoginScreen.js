@@ -71,7 +71,6 @@ export default function LoginScreen({ navigation }) {
       }, 1500);
 
     } catch (error) {
-      console.log(error);
 
       if (error.response) {
         const status = error.response.status;

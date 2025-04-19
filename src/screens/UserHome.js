@@ -1,29 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler'; // Cambio clave aquí
-import { getUserProfile, getWorkshopsForUser } from '../config/Api';
-import { Colors, Spacing } from '../config/Styles';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { getUserProfile, getWorkshopsForUser, registerToWorkshop } from '../config/Api';
+import { Colors, ModalStyles, Spacing } from '../config/Styles';
+import Inscription from '../modals/Inscription';
 import CustomHeader from '../components/CustomHeader';
 import ActivityCard from '../components/ActivityCard';
-import ModalComponent from '../components/ModalComponent';
+import MessageModal from '../components/MessageModal';
+
 
 export default function UserHome({ navigation }) {
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const { height, width } = Dimensions.get('window');
+  const [showNotification, setShowNotification] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState('success');
+  const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const loadData = async () => {
     try {
+      showMessage('loading', 'Cargando talleres.');
       const user = await getUserProfile();
       const workshopsData = await getWorkshopsForUser(user.userId);
-      
+
       if (workshopsData.type === 'SUCCESS') {
+        setShowNotification(false);
         setWorkshops(workshopsData.result);
       }
     } catch (error) {
-      console.error('Error al cargar talleres:', error);
+      console.log(error);
+      showMessage('error', 'Error al cargar los talleres');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRegistration = async (activityId) => {
+    try {
+      setIsRegistering(true);
+      const user = await getUserProfile();
+      await registerToWorkshop(user.userId, activityId);
+      setTimeout(() => {
+        showMessage('success', '¡Inscripción exitosa!');
+        setShowModal(false);
+      }, 1500)
+
+      loadData();
+
+
+    } catch (error) {
+      if (error.response) {
+        console.log(error);
+        const { text, type } = error.response.data;
+        showMessage(type.toLowerCase(), text);
+        setShowModal(false);
+      } else {
+        showMessage('error', error.message);
+        setShowModal(false);
+      }
+    } finally {
+      setIsRegistering(false);
+      setShowModal(false);
     }
   };
 
@@ -31,15 +71,20 @@ export default function UserHome({ navigation }) {
     loadData();
   }, []);
 
+  const showMessage = (type, message) => {
+    setModalType(type);
+    setModalMessage(message);
+    setShowNotification(true);
+  };
+
+
   return (
     <View style={styles.container}>
       <CustomHeader />
 
-      {/* ScrollView de gesture-handler con mejor manejo de gestos */}
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={!showModal} // Deshabilita scroll cuando el modal está visible
+        scrollEnabled={!showModal}
       >
         <Text style={styles.title}>Talleres disponibles para ti</Text>
 
@@ -50,21 +95,50 @@ export default function UserHome({ navigation }) {
             <ActivityCard
               key={index}
               activity={activity}
-              onPressBlue={() => setShowModal(true)}
+              onPressBlue={() => {
+                setSelectedActivityId(activity.id); // Guarda el ID del evento
+                setShowModal(true);
+              }}
               textBlue="Inscribirse"
             />
           ))
         )}
       </ScrollView>
 
-      {/* Modal con zIndex elevado para asegurar visibilidad */}
-      <ModalComponent
-        onClose={() => setShowModal(false)}
-        show={showModal}
-        title="Modal de inscripción"
-      >
-        <Text style={styles.modalTitle}>Hola soy el modal de inscripción</Text>          
-      </ModalComponent>
+      {/* Modal embebido directamente en la vista */}
+      {showModal && (
+        <View style={[ModalStyles.overlay, styles.cover]}>
+          <TouchableOpacity
+            style={ModalStyles.overlayTouchable}
+            activeOpacity={1}
+            onPress={() => setShowModal(false)}
+          />
+
+          <View style={[ModalStyles.container, {
+            maxHeight: height * 0.7,
+            width: width * 0.9
+          }]}>
+
+
+
+            <View style={ModalStyles.content}>
+              <Inscription
+                activityId={selectedActivityId}
+                onCancel={() => !isRegistering && setShowModal(false)}
+                onConfirm={handleRegistration}
+                isProcessing={isRegistering}
+              />
+            </View>
+          </View>
+        </View>
+      )}
+
+      <MessageModal
+        show={showNotification}
+        message={modalMessage}
+        onClose={() => setShowNotification(false)}
+        type={modalType}
+      />
     </View>
   );
 }
@@ -76,8 +150,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.padding.medium,
-    paddingTop: 10, // Espacio para el header
-    paddingBottom: 30, // Más espacio en la parte inferior
+    paddingTop: 10,
+    paddingBottom: 30,
   },
   title: {
     fontSize: 24,
@@ -85,7 +159,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     textAlign: 'center',
     paddingHorizontal: 16,
-    color: '#333', // Color mejorado para contraste
+    color: '#333',
   },
   loadingText: {
     textAlign: 'center',
@@ -93,14 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
-  modalOverlay: {
-    zIndex: 1000, // Asegura que el modal esté por encima de todo
-    backgroundColor: 'rgba(0,0,0,0.5)', // Fondo semitransparente
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
+  cover: {
+    ...StyleSheet.absoluteFillObject,
+  }
 });

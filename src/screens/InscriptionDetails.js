@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image} from "react-native";
 import { Spacing, Colors, fontSizes, BorderRadius } from "../config/Styles";
 import { getUserActivityInscription, getUserProfile } from "../config/Api";
 import { formatDate, formatTime } from "../utils/DateUtils";
+import QRCode from "react-native-qrcode-svg";
 import CustomHeader from "../components/CustomHeader";
 import MessageModal from "../components/MessageModal";
+import BlueButton from "../components/BlueButton";
+import PurpleButton from "../components/PurpleButton";
 
 export default function InscriptionDetails({ route }) {
     const { id } = route.params;
@@ -13,6 +16,7 @@ export default function InscriptionDetails({ route }) {
     const [showNotification, setShowNotification] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
+    const [isEventToday, setIsEventToday] = useState(false);
 
     const loadData = async () => {
         try {
@@ -37,10 +41,46 @@ export default function InscriptionDetails({ route }) {
         loadData();
     }, [id]);
 
+    useEffect(() => {
+        if (inscription?.activity) {
+            // Recogemos la fecha principal o, si es taller, la de fromActivity
+            const rawDate =
+                inscription.activity.date ??
+                inscription.activity.fromActivity?.date;
+
+            if (rawDate) {
+                const today = new Date();
+                const eventDate = new Date(rawDate);
+
+                const isSameDay =
+                    today.getFullYear() === eventDate.getFullYear() &&
+                    today.getMonth() === eventDate.getMonth() &&
+                    today.getDate() === eventDate.getDate();
+
+                setIsEventToday(isSameDay);
+            } else {
+                // No hay fecha; puede ser un caso inesperado
+                setIsEventToday(false);
+                console.warn("No se encontró fecha de evento en inscription.activity", inscription);
+            }
+        }
+    }, [inscription]);
+
+
     const showMessage = (type, message) => {
         setModalType(type);
         setModalMessage(message);
         setShowNotification(true);
+    };
+
+    const generateQRData = () => {
+        if (!inscription) return '';
+
+        return JSON.stringify({
+            token: inscription.token, // El token único que ya usas en el backend
+            eventName: inscription.activity.name,
+            userName: `${inscription.user.name} ${inscription.user.lastName}`,
+        });
     };
 
     return (
@@ -81,26 +121,53 @@ export default function InscriptionDetails({ route }) {
 
                             }
 
-
-
-                        </View>
-                        <View style={styles.infoText}>
-                            <Text>{inscription.activity.description}</Text>
-                            <Text>{inscription.user.name} {inscription.user.lastName}</Text>
-                            <Text>{inscription.user.email}</Text>
-                            <Text>{inscription.user.phone}</Text>
                         </View>
 
+                        <Text style={styles.infoText}>Acceso para: {inscription.user.name} {inscription.user.lastName}</Text>
 
-                        
-                        
-                        
+                        {isEventToday ? (
+
+                            <>
+                                <View style={styles.qrContainer}>
+                                    <QRCode
+                                        value={generateQRData()}
+                                        size={200}
+                                        color={Colors.textDark}
+                                        backgroundColor={Colors.cardBackground}
+                                        logoBackgroundColor="transparent"
+                                    />
+                                    <Text style={styles.qrText}>Código de acceso al evento</Text>
+                                </View>
 
 
+                            </>
+                        ) : (
+                            <View style={styles.qrContainer}>
+                                <Image
+                                    source={require('../../assets/icons/scan.png')}
+                                    style={{ width: 200, height: 200 }}
+                                    resizeMode="contain"
+                                />
+                                <Text style={styles.qrText}>
+                                    El QR se mostrara el dia del evento
+                                </Text>
+                            </View>
+
+                        )}
+
+
+                        <View style={styles.buttonSpacing}>
+                            <BlueButton>
+                                Cerrar
+                            </BlueButton>
+                        </View>
+
+                        <PurpleButton>Cancelar inscripción</PurpleButton>
                     </View>
                 ) : (
                     <Text style={styles.noDataText}>No se encontraron datos de inscripción</Text>
                 )}
+
 
             </View>
             <MessageModal
@@ -181,5 +248,23 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
         fontWeight: 'bold',
-    }
+    },
+    buttonSpacing: {
+        marginBottom: Spacing.margin.medium,
+        width: '100%'
+    },
+    qrContainer: {
+        marginVertical: Spacing.margin.medium,
+        alignItems: 'center',
+        padding: Spacing.padding.medium,
+        backgroundColor: 'white',
+        borderRadius: BorderRadius.medium,
+
+    },
+    qrText: {
+        marginTop: Spacing.margin.medium,
+        fontSize: fontSizes.small,
+        color: Colors.textDark,
+        fontWeight: 'bold',
+    },
 });

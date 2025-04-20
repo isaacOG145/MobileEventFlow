@@ -5,16 +5,16 @@ import CustomHeader from '../components/CustomHeader';
 import ActivityCard from '../components/ActivityCard';
 import { ScrollView } from 'react-native-gesture-handler';
 import MessageModal from '../components/MessageModal';
+import { useNavigation } from '@react-navigation/native';
 import { getActivitiesForOwner, getUserProfile, getUserInfo } from '../config/Api';
 
-export default function CheckerHome({ navigation }) {
-  const [showModal, setShowModal] = useState(false);
+export default function CheckerHome() {
   const [showNotification, setShowNotification] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState('success');
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const navigation = useNavigation();
 
   const showMessage = (type, message) => {
     setModalType(type);
@@ -31,15 +31,17 @@ export default function CheckerHome({ navigation }) {
       const workshopsData = await getActivitiesForOwner(boss);
 
       if (workshopsData.type === 'SUCCESS') {
-        console.log(workshopsData)
-        setShowNotification(false);
         setActivities(workshopsData.result);
+        setShowNotification(false); // Cierra el modal
+      } else {
+        showMessage('error', 'No se pudieron cargar las actividades');
       }
     } catch (error) {
       console.log(error);
       showMessage('error', 'Error al cargar las talleres');
     } finally {
       setLoading(false);
+      setShowNotification(false); 
     }
   };
 
@@ -47,8 +49,8 @@ export default function CheckerHome({ navigation }) {
     loadData();
   }, []);
 
-  const handleRegistration = () =>{
-    
+  const handleRegistration = (activityId) => {
+    navigation.navigate('Register', { activityId: activityId })
   }
 
 
@@ -57,7 +59,7 @@ export default function CheckerHome({ navigation }) {
       <CustomHeader />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        scrollEnabled={!showModal}>
+        >
 
         <Text style={styles.title}>Actividades de tu encargado</Text>
 
@@ -68,7 +70,7 @@ export default function CheckerHome({ navigation }) {
             <ActivityCard
               key={index}
               activity={activity}
-              onPressBlue={handleRegistration}
+              onPressBlue={() => handleRegistration(activity.id)}
               textBlue="Inscribir usuario"
             />
           ))

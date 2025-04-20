@@ -77,7 +77,7 @@ const InputComponent = ({
 // Estilos
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    marginBottom: 4,
     width: '100%',
   },
   labelContainer: {

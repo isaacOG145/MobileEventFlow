@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Platform } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
-import CheckerHome from '../screens/CheckerHome';
+import CheckerHomeStack from './stacks/CheckerHomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +18,7 @@ export default function CheckerTabs({ navigation }) {
     >
       <Tab.Screen
         name="Inicio"
-        component={CheckerHome}
+        component={CheckerHomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

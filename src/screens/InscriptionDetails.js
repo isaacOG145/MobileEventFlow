@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions} from "reac
 import { Spacing, Colors, fontSizes, BorderRadius, ModalStyles } from "../config/Styles";
 import { getUserActivityInscription, getUserProfile, cancelInscription } from "../config/Api";
 import { formatDate, formatTime } from "../utils/DateUtils";
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native';
 import CancelInscription from "../modals/CancelInscription";
 import QRCode from "react-native-qrcode-svg";
 import CustomHeader from "../components/CustomHeader";

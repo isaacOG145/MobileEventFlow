@@ -1,0 +1,226 @@
+import React, { useState } from "react";
+import { StyleSheet, View, Text } from "react-native";
+import CustomHeader from "../components/CustomHeader";
+import { ScrollView } from 'react-native-gesture-handler';
+import { BorderRadius, Colors, Spacing, fontSizes } from "../config/Styles";
+import { useNavigation } from '@react-navigation/native';
+import InputComponent from '../components/InputComponent';
+import BlueButton from "../components/BlueButton";
+
+const userImg = require('../../assets/icons/user.png');
+const emailImg = require('../../assets/icons/sobres.png');
+const cellphoneImg = require('../../assets/icons/telefono-inteligente.png');
+const addressImg = require('../../assets/icons/edificio-de-oficinas.png');
+const genderImg = require('../../assets/icons/generos.png');
+const birthImg = require('../../assets/icons/calendario-black.png');
+const jobImg = require('../../assets/icons/trabajo.png');
+const workPlaceImg = require('../../assets/icons/edificio-de-oficinas.png');
+const howImg = require('../../assets/icons/periodico.png');
+
+export default function InscriptionForChecker({ route }) {
+    const { activityId } = route.params;
+    const [user, setUser] = useState({
+        name: '',
+        lastName: '',
+        email: '',
+        cellphone: '',
+        address: '',
+        gender: '',
+        birthday: '',
+        job: '',
+        workPlace: '',
+        howFound: '',
+    });
+    const [errors, setErrors] = useState({
+        name: '',
+        lastName: '',
+        email: '',
+        cellphone: '',
+        address: '',
+        gender: '',
+        birthday: '',
+        job: '',
+        workPlace: '',
+        howFound: '',
+    });
+
+    const validateField = (field, value) => {
+        if (!value.trim()) {
+            setErrors(prev => ({ ...prev, [field]: 'Este campo es requerido' }));
+            return false;
+        }
+        setErrors(prev => ({ ...prev, [field]: '' }));
+        return true;
+    };
+
+    const handleNameChange = (text) => {
+        setUser(prev => ({ ...prev, name: text }));
+        validateField('name', text);
+    };
+
+    const handleLastNameChange = (text) => {
+        setUser(prev => ({ ...prev, lastName: text }));
+        validateField('lastName', text);
+    };
+
+    const handleEmailChange = (text) => {
+        setUser(prev => ({ ...prev, email: text }));
+        validateField('email', text);
+    };
+
+    const handleCellphoneChange = (text) => {
+        setUser(prev => ({ ...prev, cellphone: text }));
+        validateField('cellphone', text);
+    };
+
+    const handleAddressChange = (text) => {
+        setUser(prev => ({ ...prev, address: text }));
+        validateField('address', text);
+    };
+
+    const handleJobChange = (text) => {
+        setUser(prev => ({ ...prev, job: text }));
+        validateField('job', text);
+    };
+
+    const handleWorkPlaceChange = (text) => {
+        setUser(prev => ({ ...prev, workPlace: text }));
+        validateField('workPlace', text);
+    };
+
+    const handleHowFoundChange = (text) => {
+        setUser(prev => ({ ...prev, howFound: text }));
+        validateField('howFound', text);
+    };
+
+    return (
+        <View style={styles.container}>
+            <CustomHeader />
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.card}>
+                    <Text style={styles.title}>Registrar usuario</Text>
+
+                    <InputComponent
+                        value={user.name}
+                        onChangeText={handleNameChange}
+                        error={errors.name}
+                        maxLength="50"
+                        label="Nombre"
+                        required={true}
+                        imageSource={userImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.lastName}
+                        onChangeText={handleLastNameChange}
+                        error={errors.lastName}
+                        maxLength="100"
+                        label="Apellidos"
+                        required={true}
+                        imageSource={userImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.email}
+                        onChangeText={handleEmailChange}
+                        error={errors.email}
+                        maxLength="100"
+                        label="Email"
+                        required={true}
+                        imageSource={emailImg}
+                        imageStyle={{ width: 25, height: 25 }}
+                    />
+
+
+                    <InputComponent
+                        value={user.cellphone}
+                        onChangeText={handleCellphoneChange}
+                        error={errors.cellphone}
+                        maxLength="10"
+                        label="Telefono"
+                        required={true}
+                        imageSource={cellphoneImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.address}
+                        onChangeText={handleAddressChange}
+                        error={errors.address}
+                        maxLength="100"
+                        label="Domicilio"
+                        required={true}
+                        imageSource={addressImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.job}
+                        onChangeText={handleJobChange}
+                        error={errors.job}
+                        maxLength="50"
+                        label="Ocupación"
+                        required={true}
+                        imageSource={jobImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.workPlace}
+                        onChangeText={handleWorkPlaceChange}
+                        error={errors.workPlace}
+                        maxLength="100"
+                        label="Lugar de trabajo"
+                        required={true}
+                        imageSource={workPlaceImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+                    <InputComponent
+                        value={user.howFound}
+                        onChangeText={handleHowFoundChange}
+                        error={errors.howFound}
+                        maxLength="50"
+                        label="Medio de difusión"
+                        required={true}
+                        imageSource={howImg}
+                        imageStyle={{ width: 20, height: 20 }}
+                    />
+
+
+                    <BlueButton>Registrar</BlueButton>
+                </View>
+            </ScrollView>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: Colors.background,
+    },
+    scrollContent: {
+        paddingHorizontal: Spacing.padding.medium,
+        paddingTop: 10,
+        paddingBottom: 30,
+        alignItems: 'center'
+    },
+    card: {
+        width: '85%',
+        borderRadius: BorderRadius.xlarge,
+        padding: Spacing.padding.xxlarge,
+        backgroundColor: Colors.cardBackground,
+        marginTop: Spacing.margin.betweenItems,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
+        fontSize: fontSizes.large,
+        fontWeight: '700',
+        color: Colors.blue,
+        marginBottom: Spacing.margin.betweenItems
+    }
+});

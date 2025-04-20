@@ -88,6 +88,21 @@ export const getUserActivityInscription = async (userId, activityId) => {
   }
 };
 
+export const getActivitiesForOwner = async (userId) => {
+  try{
+
+    const response = await api.get(`/activity/findAllActive/byOwner/${userId}`)
+
+    if(response.data.type === 'ERROR'){
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+    
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+  }
+}
 
 
 export const getActivitiesForUser = async (userId) => {

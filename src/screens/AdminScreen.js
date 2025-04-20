@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function AdminScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>🏠 Soy el incio de checker</Text>
+      <Text style={styles.text}>🏠 Soy el incio de admin</Text>
     </View>
   );
 }

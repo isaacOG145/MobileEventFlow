@@ -96,7 +96,7 @@ export default function UserHome({ navigation }) {
               key={index}
               activity={activity}
               onPressBlue={() => {
-                setSelectedActivityId(activity.id); // Guarda el ID del evento
+                setSelectedActivityId(activity.id);
                 setShowModal(true);
               }}
               textBlue="Inscribirse"
@@ -105,7 +105,6 @@ export default function UserHome({ navigation }) {
         )}
       </ScrollView>
 
-      {/* Modal embebido directamente en la vista */}
       {showModal && (
         <View style={[ModalStyles.overlay, styles.cover]}>
           <TouchableOpacity

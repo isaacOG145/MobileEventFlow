@@ -5,6 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { BorderRadius, Colors, Spacing, fontSizes } from "../config/Styles";
 import { useNavigation } from '@react-navigation/native';
 import InputComponent from '../components/InputComponent';
+import SelectInputComponent from "../components/SelectInputComponent";
 import BlueButton from "../components/BlueButton";
 
 const userImg = require('../../assets/icons/user.png');
@@ -19,6 +20,7 @@ const howImg = require('../../assets/icons/periodico.png');
 
 export default function InscriptionForChecker({ route }) {
     const { activityId } = route.params;
+
     const [user, setUser] = useState({
         name: '',
         lastName: '',
@@ -31,6 +33,7 @@ export default function InscriptionForChecker({ route }) {
         workPlace: '',
         howFound: '',
     });
+
     const [errors, setErrors] = useState({
         name: '',
         lastName: '',
@@ -53,46 +56,6 @@ export default function InscriptionForChecker({ route }) {
         return true;
     };
 
-    const handleNameChange = (text) => {
-        setUser(prev => ({ ...prev, name: text }));
-        validateField('name', text);
-    };
-
-    const handleLastNameChange = (text) => {
-        setUser(prev => ({ ...prev, lastName: text }));
-        validateField('lastName', text);
-    };
-
-    const handleEmailChange = (text) => {
-        setUser(prev => ({ ...prev, email: text }));
-        validateField('email', text);
-    };
-
-    const handleCellphoneChange = (text) => {
-        setUser(prev => ({ ...prev, cellphone: text }));
-        validateField('cellphone', text);
-    };
-
-    const handleAddressChange = (text) => {
-        setUser(prev => ({ ...prev, address: text }));
-        validateField('address', text);
-    };
-
-    const handleJobChange = (text) => {
-        setUser(prev => ({ ...prev, job: text }));
-        validateField('job', text);
-    };
-
-    const handleWorkPlaceChange = (text) => {
-        setUser(prev => ({ ...prev, workPlace: text }));
-        validateField('workPlace', text);
-    };
-
-    const handleHowFoundChange = (text) => {
-        setUser(prev => ({ ...prev, howFound: text }));
-        validateField('howFound', text);
-    };
-
     return (
         <View style={styles.container}>
             <CustomHeader />
@@ -102,7 +65,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.name}
-                        onChangeText={handleNameChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, name: text }));
+                            validateField('name', text);
+                        }}
                         error={errors.name}
                         maxLength="50"
                         label="Nombre"
@@ -113,7 +79,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.lastName}
-                        onChangeText={handleLastNameChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, lastName: text }));
+                            validateField('lastName', text);
+                        }}
                         error={errors.lastName}
                         maxLength="100"
                         label="Apellidos"
@@ -124,7 +93,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.email}
-                        onChangeText={handleEmailChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, email: text }));
+                            validateField('email', text);
+                        }}
                         error={errors.email}
                         maxLength="100"
                         label="Email"
@@ -133,10 +105,12 @@ export default function InscriptionForChecker({ route }) {
                         imageStyle={{ width: 25, height: 25 }}
                     />
 
-
                     <InputComponent
                         value={user.cellphone}
-                        onChangeText={handleCellphoneChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, cellphone: text }));
+                            validateField('cellphone', text);
+                        }}
                         error={errors.cellphone}
                         maxLength="10"
                         label="Telefono"
@@ -145,9 +119,29 @@ export default function InscriptionForChecker({ route }) {
                         imageStyle={{ width: 20, height: 20 }}
                     />
 
+                    <SelectInputComponent
+                        label="Género"
+                        required={true}
+                        value={user.gender}
+                        onValueChange={(val) => {
+                            setUser(prev => ({ ...prev, gender: val }));
+                            validateField('gender', val);
+                        }}
+                        options={[
+                            { value: 'masculino', label: 'Masculino' },
+                            { value: 'femenino', label: 'Femenino' },
+                            { value: 'otro', label: 'Otro' }
+                        ]}
+                        error={errors.gender}
+                        imageSource={genderImg}
+                    />
+
                     <InputComponent
                         value={user.address}
-                        onChangeText={handleAddressChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, address: text }));
+                            validateField('address', text);
+                        }}
                         error={errors.address}
                         maxLength="100"
                         label="Domicilio"
@@ -158,7 +152,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.job}
-                        onChangeText={handleJobChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, job: text }));
+                            validateField('job', text);
+                        }}
                         error={errors.job}
                         maxLength="50"
                         label="Ocupación"
@@ -169,7 +166,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.workPlace}
-                        onChangeText={handleWorkPlaceChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, workPlace: text }));
+                            validateField('workPlace', text);
+                        }}
                         error={errors.workPlace}
                         maxLength="100"
                         label="Lugar de trabajo"
@@ -180,7 +180,10 @@ export default function InscriptionForChecker({ route }) {
 
                     <InputComponent
                         value={user.howFound}
-                        onChangeText={handleHowFoundChange}
+                        onChangeText={(text) => {
+                            setUser(prev => ({ ...prev, howFound: text }));
+                            validateField('howFound', text);
+                        }}
                         error={errors.howFound}
                         maxLength="50"
                         label="Medio de difusión"
@@ -189,14 +192,12 @@ export default function InscriptionForChecker({ route }) {
                         imageStyle={{ width: 20, height: 20 }}
                     />
 
-
                     <BlueButton>Registrar</BlueButton>
                 </View>
             </ScrollView>
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

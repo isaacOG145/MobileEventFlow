@@ -1,26 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
     View,
     Text,
     Image,
     StyleSheet,
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import UserTabs from './UserTabs';
-import { Colors } from '../config/Styles';
-import { getUserProfile, getUserInfo } from '../config/Api';
+import Logout from '../modals/Logout';
+const { height, width } = Dimensions.get('window');
+import { Colors, ModalStyles } from '../config/Styles';
+import { getUserInfo } from '../config/Api';
+import { AuthContext } from '../context/AuthContext';
 
 const userFrame = require('../../assets/icons/userFrame.png');
 const Drawer = createDrawerNavigator();
 
 export default function UserDrawer() {
     const [userData, setUserData] = useState({ name: '', email: '' });
+    const [showModal, setShowModal] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const { user, logout } = useContext(AuthContext);
 
     const loadProfile = async () => {
         try {
-            const profile = await getUserProfile();
-            const userInfo = await getUserInfo(profile.userId);
+            const userInfo = await getUserInfo(user.userId);
             setUserData({
                 name: userInfo.result.name,
                 email: userInfo.result.email,
@@ -31,17 +38,40 @@ export default function UserDrawer() {
     };
 
     useEffect(() => {
-        loadProfile();
-    }, []);
+        if (user) {
+            loadProfile();
+        }
+    }, [user]);
+
+    const handleLogout = async () => {
+        setIsProcessing(true);
+        try {
+            await logout();
+            setIsProcessing(false);
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <Drawer.Navigator
-            drawerContent={(props) => <CustomDrawerContent {...props} userData={userData} />}
+            drawerContent={(props) => (
+                <CustomDrawerContent 
+                    {...props} 
+                    userData={userData} 
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    isProcessing={isProcessing}
+                    logout={handleLogout}
+                />
+            )}
             screenOptions={{
                 drawerPosition: 'right',
                 headerShown: false,
                 drawerStyle: {
-                    width: '70%',
+                    width: '85%',
                     backgroundColor: Colors.background,
                 },
                 drawerActiveTintColor: Colors.purple,
@@ -64,7 +94,13 @@ export default function UserDrawer() {
 }
 
 const CustomDrawerContent = (props) => {
-    const { userData, navigation } = props;
+    const { 
+        userData, 
+        showModal, 
+        setShowModal, 
+        isProcessing, 
+        logout 
+    } = props;
 
     return (
         <DrawerContentScrollView
@@ -92,11 +128,33 @@ const CustomDrawerContent = (props) => {
                     icon={({ color, size }) => (
                         <MaterialCommunityIcons name="logout" size={size} color={color} />
                     )}
-                    onPress={() => {
-                        alert('Cerrar sesión');
-                    }}
+                    onPress={() => setShowModal(true)}
                 />
             </View>
+            
+            
+            {showModal && (
+                <View style={[ModalStyles.overlay, styles.cover]}>
+                    <TouchableOpacity
+                        style={ModalStyles.overlayTouchable}
+                        activeOpacity={1}
+                        onPress={() => !isProcessing && setShowModal(false)}
+                    />
+
+                    <View style={[ModalStyles.container, {
+                        maxHeight: height * 0.7,
+                        width: width * 0.9
+                    }]}>
+                        <View style={ModalStyles.content}>
+                            <Logout
+                                onCancel={() => !isProcessing && setShowModal(false)}
+                                onConfirm={logout}
+                                isProcessing={isProcessing}
+                            />
+                        </View>
+                    </View>
+                </View>
+            )}
         </DrawerContentScrollView>
     );
 };
@@ -136,5 +194,8 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 10,
         width: '100%',
-    },
+    }, 
+    cover: {
+        ...StyleSheet.absoluteFillObject,
+    }
 });

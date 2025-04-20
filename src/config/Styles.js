@@ -1,3 +1,5 @@
+import { StyleSheet } from "react-native";
+
 export const Colors = {
     background: '#f2f6f9',
     cardBackground: '#ffffff',

@@ -5,10 +5,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import LoadingScreen from '../screens/LoadingScreen';
+import UserDrawer from './DrawerNavigation';
 import UserTabs from './UserTabs';
 import CheckerTabs from './CheckerTabs';
 import AdminScreen from '../screens/AdminScreen';
-import InscriptionDetails from '../screens/InscriptionDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +25,8 @@ export default function AppNavigator() {
         {!user ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : role == 'USER' ? (
-          <Stack.Screen name="UserTabs" component={UserTabs} />
+          
+          <Stack.Screen name="UserDrawer" component={UserDrawer} />
         ) : role == 'CHECKER' ? (
           <Stack.Screen name="CheckerTabs" component={CheckerTabs} />
         ) : (

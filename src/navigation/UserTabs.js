@@ -1,15 +1,14 @@
-// src/navigation/UserTabs.js
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Entypo from '@expo/vector-icons/Entypo';
-import UserHome from '../screens/UserHome';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons, Entypo } from '@expo/vector-icons';
 import InscriptionsStack from './stacks/InscriptionStack';
+import UserHomeStack from './stacks/UserHomeStack';
+import { StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-// Componente para la pantalla vacía del botón del drawer
 function EmptyScreen() {
   return <View />;
 }
@@ -17,17 +16,16 @@ function EmptyScreen() {
 export default function UserTabs({ navigation }) {
   return (
     <Tab.Navigator
-    
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#8005A3',   
-        tabBarInactiveTintColor: '#666',    
+        tabBarActiveTintColor: '#8005A3',
+        tabBarInactiveTintColor: '#666',
       }}
     >
       <Tab.Screen 
         name="Inicio" 
-        component={UserHome} 
+        component={UserHomeStack} 
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons 
@@ -44,14 +42,26 @@ export default function UserTabs({ navigation }) {
         options={{
           tabBarIcon: ({ focused }) => (
             <Entypo
-            name="ticket"
-            size={24}               // recibe el tamaño del tabBar (o usa 24 por defecto)
-            color={focused ? '#8005A3' : '#666'} // igual lógica de color
-          />
+              name="ticket"
+              size={24}
+              color={focused ? '#8005A3' : '#666'}
+            />
           ),
         }}
       />
-      {/* Pantalla ficticia para el botón del drawer */}
+      <Tab.Screen
+        name="Perfil"
+        component={ProfileScreen} // Aquí mantenemos el stack de perfil
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={24}
+              color={focused ? '#8005A3' : '#666'}
+            />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Menu"
         component={EmptyScreen}
@@ -70,6 +80,7 @@ export default function UserTabs({ navigation }) {
     </Tab.Navigator>
   );
 }
+
 
 const styles = StyleSheet.create({
   tabBar: {

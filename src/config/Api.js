@@ -35,6 +35,19 @@ export const getUserProfile = async () => {
   return response.data; // contiene userId, email, expiration, role
 };
 
+export const getUserInfo = async (userId) => {
+  try {
+    const response = await api.get(`/user/findId/${userId}`);
+
+    if (response.data.type === 'ERROR') {
+      throw new Error(response.data.message); // Para capturarlo en el componente
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+  }
+}
+
 export const getUserActivityInscription = async (userId, activityId) => {
   try {
     if (!userId) {
@@ -140,9 +153,9 @@ export const registerToWorkshop = async (userId, activityId) => {
 };
 
 export const cancelInscription = async (inscriptionId) => {
-  try{
+  try {
 
-    const response = await api.put('/user-activities/cancel',{
+    const response = await api.put('/user-activities/cancel', {
       id: inscriptionId
     });
     console.log(inscriptionId)
@@ -156,7 +169,7 @@ export const cancelInscription = async (inscriptionId) => {
     }
 
     return response.data;
-  }catch (error) {
+  } catch (error) {
     // Si el backend ya mandó un Message, lo propagamos tal cual
     if (error.response && error.response.data) {
       throw error;

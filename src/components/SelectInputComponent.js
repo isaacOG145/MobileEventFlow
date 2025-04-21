@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Picker } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 const SelectInputComponent = ({
   options = [],           // Array de opciones: [{ value: "val", label: "Texto" }]
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
     width: '100%',
     color: '#141414',
     borderRadius: 12,
-    padding: 12,
     borderColor: '#ccc',
     elevation: 0,
   },

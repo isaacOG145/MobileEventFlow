@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, StyleSheet, Image } from 'react-native';
-import PropTypes from 'prop-types';
 
 const InputComponent = ({
   value = "",
@@ -130,20 +129,5 @@ const styles = StyleSheet.create({
   },
 });
 
-// Validación de props
-InputComponent.propTypes = {
-  value: PropTypes.string,
-  onChangeText: PropTypes.func,
-  label: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  maxLength: PropTypes.number,
-  disabled: PropTypes.bool,
-  containerStyle: PropTypes.object,
-  inputStyle: PropTypes.object,
-  labelStyle: PropTypes.object,
-  imageSource: PropTypes.any,
-  imageStyle: PropTypes.object,
-};
 
 export default InputComponent;

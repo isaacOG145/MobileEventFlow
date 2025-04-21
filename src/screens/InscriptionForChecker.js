@@ -6,6 +6,7 @@ import { BorderRadius, Colors, Spacing, fontSizes } from "../config/Styles";
 import { useNavigation } from '@react-navigation/native';
 import InputComponent from '../components/InputComponent';
 import SelectInputComponent from "../components/SelectInputComponent";
+import BirthDateComponent from "../components/BirthDateComponent";
 import BlueButton from "../components/BlueButton";
 
 const userImg = require('../../assets/icons/user.png');
@@ -70,7 +71,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('name', text);
                         }}
                         error={errors.name}
-                        maxLength="50"
                         label="Nombre"
                         required={true}
                         imageSource={userImg}
@@ -84,7 +84,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('lastName', text);
                         }}
                         error={errors.lastName}
-                        maxLength="100"
                         label="Apellidos"
                         required={true}
                         imageSource={userImg}
@@ -98,7 +97,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('email', text);
                         }}
                         error={errors.email}
-                        maxLength="100"
                         label="Email"
                         required={true}
                         imageSource={emailImg}
@@ -112,7 +110,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('cellphone', text);
                         }}
                         error={errors.cellphone}
-                        maxLength="10"
                         label="Telefono"
                         required={true}
                         imageSource={cellphoneImg}
@@ -136,6 +133,20 @@ export default function InscriptionForChecker({ route }) {
                         imageSource={genderImg}
                     />
 
+                    <BirthDateComponent
+                        label="Fecha de nacimiento"
+                        value={user.birthday}  // Usamos el valor del estado
+                        onChange={(date) => {
+                            setUser(prev => ({ ...prev, birthday: date }));
+                            validateField('birthday', date);
+                        }}
+                        error={errors.birthday}
+                        required={true}
+                        imageSource={birthImg}
+                        imageSize={24}
+                    />
+
+
                     <InputComponent
                         value={user.address}
                         onChangeText={(text) => {
@@ -143,7 +154,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('address', text);
                         }}
                         error={errors.address}
-                        maxLength="100"
                         label="Domicilio"
                         required={true}
                         imageSource={addressImg}
@@ -157,7 +167,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('job', text);
                         }}
                         error={errors.job}
-                        maxLength="50"
                         label="Ocupación"
                         required={true}
                         imageSource={jobImg}
@@ -171,7 +180,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('workPlace', text);
                         }}
                         error={errors.workPlace}
-                        maxLength="100"
                         label="Lugar de trabajo"
                         required={true}
                         imageSource={workPlaceImg}
@@ -185,7 +193,6 @@ export default function InscriptionForChecker({ route }) {
                             validateField('howFound', text);
                         }}
                         error={errors.howFound}
-                        maxLength="50"
                         label="Medio de difusión"
                         required={true}
                         imageSource={howImg}

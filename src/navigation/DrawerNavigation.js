@@ -143,7 +143,7 @@ const CustomDrawerContent = (props) => {
 
                     <View style={[ModalStyles.container, {
                         maxHeight: height * 0.7,
-                        width: width * 0.9
+                        width: width * 0.8
                     }]}>
                         <View style={ModalStyles.content}>
                             <Logout

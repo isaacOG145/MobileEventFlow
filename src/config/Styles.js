@@ -81,7 +81,7 @@ export const ModalStyles = {
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        width: '90%',
+        width: '85%',
         maxWidth: 400,
     },
     header: {

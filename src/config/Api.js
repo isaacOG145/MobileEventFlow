@@ -89,16 +89,16 @@ export const getUserActivityInscription = async (userId, activityId) => {
 };
 
 export const getActivitiesForOwner = async (userId) => {
-  try{
+  try {
 
     const response = await api.get(`/activity/findAllActive/byOwner/${userId}`)
 
-    if(response.data.type === 'ERROR'){
+    if (response.data.type === 'ERROR') {
       throw new Error(response.data.message);
     }
 
     return response.data;
-    
+
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
   }
@@ -167,13 +167,47 @@ export const registerToWorkshop = async (userId, activityId) => {
   }
 };
 
+export const updatePassword = async (id, password) => {
+  try {
+    const response = await api.put('/user/updatePassword', {
+      id: id,
+      password: password
+    });
+
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+      
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+    return response.data;
+  } catch (error) {
+    
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+      
+      const fallback = {
+        text: 'Error al cambiar la contraseña',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
+  }
+}
+
 export const cancelInscription = async (inscriptionId) => {
   try {
 
     const response = await api.put('/user-activities/cancel', {
       id: inscriptionId
     });
-    console.log(inscriptionId)
+
     const { type, text } = response.data;
 
     if (type === 'ERROR' || type === 'WARNING') {

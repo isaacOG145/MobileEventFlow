@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState, useEffect} from "react";
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, ModalStyles, Spacing } from '../config/Styles';
 import CustomHeader from '../components/CustomHeader';
@@ -6,9 +6,52 @@ import { ScrollView } from 'react-native-gesture-handler';
 import BlueButton from "../components/BlueButton";
 import PurpleButton from '../components/PurpleButton';
 import { useNavigation } from '@react-navigation/native';
+import { getUserProfile, getUserInfo } from "../config/Api";
+import { formatDate } from "../utils/DateUtils";
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
+    const [userData,setUserData] = useState({
+        name: '',
+        lastName: '',
+        cellphone: '',
+        birthday: '',
+        email: '',
+        address: '',
+        job: '',
+        workplace:'',
+        howFound: ''
+    });
+
+   
+
+    const loadProfile = async () => {
+            try {
+                const user = await getUserProfile();
+                const userInfo = await getUserInfo(user.userId);
+                const profile = userInfo.result;
+                setUserData({
+                    name: profile?.name || '',
+                    lastName: profile?.lastName || '',
+                    email: profile?.email || '',
+                    cellphone: profile?.cellphone || '',
+                    birthday: profile?.birthday || '',
+                    address: profile?.address || '',
+                    job: profile?.job || '',
+                    workplace: profile?.workplace || '',
+                    howFound: profile?.howFound || ''
+                });
+                
+            } catch (error) {
+                console.error('Error cargando el perfil:', error.message);
+            }
+        };
+
+        useEffect(() => {
+            
+            loadProfile();
+        
+    }, []);
 
     const handleEdit = () => {
         navigation.navigate('UpdateProfile')
@@ -16,6 +59,13 @@ export default function ProfileScreen() {
     const handleChangePassword = () => {
         navigation.navigate('ChangePassword')
     }
+
+    const renderField = (label, value) => {
+        if (!value) return null;
+        return <Text>{label}: {value}</Text>;
+    };
+    
+
     return (
         <View style={styles.container}>
             <CustomHeader />
@@ -25,6 +75,15 @@ export default function ProfileScreen() {
 
                 <View style={styles.card}>
                     <Text style={styles.title}>Perfil</Text>
+
+                    <Text>Nombre: {userData.name} {userData.lastName}</Text>
+                    <Text>Email: {userData.email}</Text>
+                    <Text>Télefono; {userData.cellphone}</Text>
+                    {renderField("Fecha de nacimiento", )}
+                    {renderField("Dirección", formatDate(userData.address))}
+                    {renderField("Profesión", userData.job)}
+                    {renderField("Lugar de trabajo", userData.workplace)}
+                    {renderField("¿Cómo nos conociste?", userData.howFound)}
 
                     <View style={styles.buttonSpacing}>
                         <BlueButton onPress={handleEdit}>Editar perfil</BlueButton>

@@ -22,7 +22,7 @@ export default function MyAssignments() {
             const AssignmentsData = await getAssingments(user.userId);
 
             if (AssignmentsData.type === 'SUCCESS') {
-                setShowNotification(false);
+                setShowNotification(false); 
                 setAssignments(AssignmentsData.result);
             }
         } catch (error) {

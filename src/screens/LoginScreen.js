@@ -60,15 +60,7 @@ export default function LoginScreen({ navigation }) {
       await updateAuthState(jwt, role);
       showMessage('success', "Acceso autorizado");
 
-      setTimeout(() => {
-        if (role === 'USER') {
-          navigation.navigate('UserTabs'); 
-        } else if (role === 'CHECKER') {
-          navigation.navigate('CheckerTabs'); 
-        } else{
-          navigation.navigate('adminScreen');
-        }
-      }, 1500);
+      
 
     } catch (error) {
 

@@ -7,15 +7,15 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import UserTabs from './UserTabs';
 import Logout from '../modals/Logout';
-const { height, width } = Dimensions.get('window');
 import { Colors, ModalStyles } from '../config/Styles';
 import { getUserInfo } from '../config/Api';
 import { AuthContext } from '../context/AuthContext';
 
+const { height, width } = Dimensions.get('window');
 const userFrame = require('../../assets/icons/userFrame.png');
 const Drawer = createDrawerNavigator();
 
@@ -93,21 +93,16 @@ export default function UserDrawer() {
     );
 }
 
-const CustomDrawerContent = (props) => {
-    const { 
-        userData, 
-        showModal, 
-        setShowModal, 
-        isProcessing, 
-        logout 
-    } = props;
-
+const CustomDrawerContent = ({
+    userData, 
+    showModal, 
+    setShowModal, 
+    isProcessing, 
+    logout, 
+    ...props
+}) => {
     return (
-        <DrawerContentScrollView
-            {...props}
-            contentContainerStyle={{ flexGrow: 1, paddingTop: 0, margin: 0 }}
-            style={styles.scrollView}
-        >
+        <View style={styles.drawerContainer}>
             <View style={styles.headerContainer}>
                 <Image source={userFrame} style={styles.userImage} />
                 <View style={styles.userInfo}>
@@ -131,8 +126,7 @@ const CustomDrawerContent = (props) => {
                     onPress={() => setShowModal(true)}
                 />
             </View>
-            
-            
+
             {showModal && (
                 <View style={[ModalStyles.overlay, styles.cover]}>
                     <TouchableOpacity
@@ -140,7 +134,6 @@ const CustomDrawerContent = (props) => {
                         activeOpacity={1}
                         onPress={() => !isProcessing && setShowModal(false)}
                     />
-
                     <View style={[ModalStyles.container, {
                         maxHeight: height * 0.7,
                         width: width * 0.8
@@ -155,15 +148,13 @@ const CustomDrawerContent = (props) => {
                     </View>
                 </View>
             )}
-        </DrawerContentScrollView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    scrollView: {
+    drawerContainer: {
         flex: 1,
-        padding: 0,
-        margin: 0,
     },
     headerContainer: {
         paddingVertical: 20,
@@ -194,7 +185,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 10,
         width: '100%',
-    }, 
+    },
     cover: {
         ...StyleSheet.absoluteFillObject,
     }

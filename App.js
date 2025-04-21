@@ -1,6 +1,6 @@
 import React from 'react';
-import 'react-native-gesture-handler'; // ¡DEBE SER LA PRIMERA IMPORTACIÓN!
-import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Añade esto
+import 'react-native-gesture-handler'; 
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; 
 import { AuthProvider } from './src/context/AuthContext';
 import AppNavigator from './src/navigation/AppNavigator';
 

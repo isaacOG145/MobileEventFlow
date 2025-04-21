@@ -7,8 +7,6 @@ import LoginScreen from '../screens/LoginScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import UserDrawer from './DrawerNavigation';
 import CheckerDrawer from './CheckerDrawer';
-import UserTabs from './UserTabs';
-import CheckerTabs from './CheckerTabs';
 import AdminScreen from '../screens/AdminScreen';
 
 const Stack = createNativeStackNavigator();
@@ -31,11 +29,10 @@ export default function AppNavigator() {
         ) : role == 'CHECKER' ? (
           <Stack.Screen name="CheckerDrawer" component={CheckerDrawer} />
         ) : (
-          // Pantalla por defecto o de error si el rol no es reconocido
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="adminScreen" component={AdminScreen}/>
         )}
         
-        <Stack.Screen name="adminScreen" component={AdminScreen}/>
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

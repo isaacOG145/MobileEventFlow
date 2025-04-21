@@ -1,12 +1,20 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Platform } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import CheckerHomeStack from './stacks/CheckerHomeStack';
+import AssignmentStack from './stacks/AssignmentStack';
+import ProfileStack from './stacks/ProfileStack';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function CheckerTabs({ navigation }) {
+
+  function EmptyScreen() {
+    return <View />;
+  }
   return (
     <Tab.Navigator
       screenOptions={{
@@ -29,6 +37,49 @@ export default function CheckerTabs({ navigation }) {
           ),
         }}
       />
+
+      <Tab.Screen
+        name="Asignaciones"
+        component={AssignmentStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Entypo
+              name="ticket"
+              size={24}
+              color={focused ? '#8005A3' : '#666'}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={ProfileStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={24}
+              color={focused ? '#8005A3' : '#666'}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Menu"
+        component={EmptyScreen}
+        options={{
+          tabBarButton: () => (
+            <TouchableOpacity
+              onPress={() => navigation.toggleDrawer()}
+              style={styles.drawerButton}
+            >
+              <Ionicons name="menu" size={28} color="#666" />
+            </TouchableOpacity>
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -44,5 +95,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 0.5,
     borderTopColor: '#ccc',
+  },
+  drawerButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 15,
   },
 });

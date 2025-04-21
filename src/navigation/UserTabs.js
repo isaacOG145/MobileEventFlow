@@ -4,7 +4,7 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 import InscriptionsStack from './stacks/InscriptionStack';
 import UserHomeStack from './stacks/UserHomeStack';
 import { StyleSheet, Platform, TouchableOpacity } from 'react-native';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileStack from './stacks/ProfileStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -51,7 +51,7 @@ export default function UserTabs({ navigation }) {
       />
       <Tab.Screen
         name="Perfil"
-        component={ProfileScreen} // Aquí mantenemos el stack de perfil
+        component={ProfileStack} 
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

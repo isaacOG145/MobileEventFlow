@@ -6,6 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import UserDrawer from './DrawerNavigation';
+import CheckerDrawer from './CheckerDrawer';
 import UserTabs from './UserTabs';
 import CheckerTabs from './CheckerTabs';
 import AdminScreen from '../screens/AdminScreen';
@@ -28,7 +29,7 @@ export default function AppNavigator() {
           
           <Stack.Screen name="UserDrawer" component={UserDrawer} />
         ) : role == 'CHECKER' ? (
-          <Stack.Screen name="CheckerTabs" component={CheckerTabs} />
+          <Stack.Screen name="CheckerDrawer" component={CheckerDrawer} />
         ) : (
           // Pantalla por defecto o de error si el rol no es reconocido
           <Stack.Screen name="Login" component={LoginScreen} />

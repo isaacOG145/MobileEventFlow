@@ -8,3 +8,7 @@ export default function UpdateProfile(){
         </View>
     );
 }
+
+const style = StyleSheet.create({
+    
+});

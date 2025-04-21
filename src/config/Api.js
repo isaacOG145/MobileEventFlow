@@ -48,6 +48,30 @@ export const getUserInfo = async (userId) => {
   }
 }
 
+export const getAssingments = async (userId) => {
+  try {
+    const response = await api.get(`/activity/assignment/findByChecker/${userId}`);
+    const { data } = response;
+
+    if (!data || data.type !== 'SUCCESS' || !data.result) {
+      throw new Error(data?.text || 'Respuesta inválida del servidor');
+    }
+
+    return data; // <-- ahora sí regresas el objeto completo
+  } catch (error) {
+    console.error('Error en encontrar asignaciones:', error);
+
+    if (error.response) {
+      throw new Error(error.response.data?.text || error.response.data?.message || 'Error al obtener la inscripción');
+    } else if (error.request) {
+      throw new Error('No se recibió respuesta del servidor');
+    } else {
+      throw new Error(error.message || 'Error al configurar la solicitud');
+    }
+  }
+};
+
+
 export const getUserActivityInscription = async (userId, activityId) => {
   try {
     if (!userId) {
@@ -177,7 +201,7 @@ export const updatePassword = async (id, password) => {
     const { type, text } = response.data;
 
     if (type === 'ERROR' || type === 'WARNING') {
-      
+
       const customError = new Error(text);
       customError.response = { data: response.data };
       throw customError;
@@ -185,11 +209,11 @@ export const updatePassword = async (id, password) => {
 
     return response.data;
   } catch (error) {
-    
+
     if (error.response && error.response.data) {
       throw error;
     } else {
-      
+
       const fallback = {
         text: 'Error al cambiar la contraseña',
         type: 'ERROR'

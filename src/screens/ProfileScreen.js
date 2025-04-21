@@ -1,6 +1,6 @@
-import React,{useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors, ModalStyles, Spacing } from '../config/Styles';
+import { Colors, fontSizes, ModalStyles, Spacing } from '../config/Styles';
 import CustomHeader from '../components/CustomHeader';
 import { ScrollView } from 'react-native-gesture-handler';
 import BlueButton from "../components/BlueButton";
@@ -11,7 +11,7 @@ import { formatDate } from "../utils/DateUtils";
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
-    const [userData,setUserData] = useState({
+    const [userData, setUserData] = useState({
         name: '',
         lastName: '',
         cellphone: '',
@@ -19,38 +19,37 @@ export default function ProfileScreen() {
         email: '',
         address: '',
         job: '',
-        workplace:'',
+        workplace: '',
         howFound: ''
     });
 
-   
+
 
     const loadProfile = async () => {
-            try {
-                const user = await getUserProfile();
-                const userInfo = await getUserInfo(user.userId);
-                const profile = userInfo.result;
-                setUserData({
-                    name: profile?.name || '',
-                    lastName: profile?.lastName || '',
-                    email: profile?.email || '',
-                    cellphone: profile?.cellphone || '',
-                    birthday: profile?.birthday || '',
-                    address: profile?.address || '',
-                    job: profile?.job || '',
-                    workplace: profile?.workplace || '',
-                    howFound: profile?.howFound || ''
-                });
-                
-            } catch (error) {
-                console.error('Error cargando el perfil:', error.message);
-            }
-        };
+        try {
+            const user = await getUserProfile();
+            const userInfo = await getUserInfo(user.userId);
+            const profile = userInfo.result;
+            setUserData({
+                name: profile?.name || '',
+                lastName: profile?.lastName || '',
+                email: profile?.email || '',
+                cellphone: profile?.phone || '',
+                birthday: profile?.birthday || '',
+                address: profile?.address || '',
+                job: profile?.job || '',
+                workplace: profile?.workplace || ''
+            });
 
-        useEffect(() => {
-            
-            loadProfile();
-        
+        } catch (error) {
+            console.error('Error cargando el perfil:', error.message);
+        }
+    };
+
+    useEffect(() => {
+
+        loadProfile();
+
     }, []);
 
     const handleEdit = () => {
@@ -62,10 +61,28 @@ export default function ProfileScreen() {
 
     const renderField = (label, value) => {
         if (!value) return null;
-        return <Text>{label}: {value}</Text>;
+        return (
+            <>
+                <Text style={styles.boldText}>{label}</Text>
+                <Text style={styles.text}>{value}</Text>
+            </>
+        );
     };
-    
 
+    function calculateAge(birthdateStr) {
+        const today = new Date();
+        const birthdate = new Date(birthdateStr);
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const month = today.getMonth() - birthdate.getMonth();
+    
+        // Ajuste si el cumpleaños aún no ha ocurrido este año
+        if (month < 0 || (month === 0 && today.getDate() < birthdate.getDate())) {
+            age--;
+        }
+    
+        return age;
+    }
+    
     return (
         <View style={styles.container}>
             <CustomHeader />
@@ -76,11 +93,14 @@ export default function ProfileScreen() {
                 <View style={styles.card}>
                     <Text style={styles.title}>Perfil</Text>
 
-                    <Text>Nombre: {userData.name} {userData.lastName}</Text>
-                    <Text>Email: {userData.email}</Text>
-                    <Text>Télefono; {userData.cellphone}</Text>
-                    {renderField("Fecha de nacimiento", )}
-                    {renderField("Dirección", formatDate(userData.address))}
+                    <Text style={styles.boldText}>Nombre</Text>
+                    <Text style={styles.text}>{userData.name} {userData.lastName}</Text>
+                    <Text style={styles.boldText}>Email</Text>
+                    <Text style={styles.text}>{userData.email}</Text>
+                    <Text style={styles.boldText}>Télefono</Text>
+                    <Text style={styles.text}>{userData.cellphone}</Text>
+                    {renderField("Fecha de nacimiento", calculateAge(userData.birthday))}
+                    {renderField("Dirección", userData.address)}
                     {renderField("Profesión", userData.job)}
                     {renderField("Lugar de trabajo", userData.workplace)}
                     {renderField("¿Cómo nos conociste?", userData.howFound)}
@@ -103,6 +123,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
+    },
+    boldText: {
+        fontSize: fontSizes.normal,
+        color: Colors.textDark,
+        textAlign: 'left',
+        fontWeight: '600'
+    },
+    text: {
+        fontSize: fontSizes.normal,
+        marginBottom: Spacing.margin.small,
+        color: Colors.textDark,
+        textAlign: 'justify',
+        fontWeight: '500'
     },
     scrollContent: {
         paddingHorizontal: Spacing.padding.medium,
@@ -140,5 +173,6 @@ const styles = StyleSheet.create({
         elevation: 5,
     }, buttonSpacing: {
         marginBottom: Spacing.margin.medium,
+        marginTop: Spacing.margin.medium
     },
 });

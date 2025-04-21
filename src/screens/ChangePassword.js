@@ -9,10 +9,9 @@ import PurpleButton from "../components/PurpleButton";
 import { useState } from "react";
 import { getUserProfile, updatePassword } from "../config/Api";
 import MessageModal from '../components/MessageModal';
-
+import { useNavigation } from '@react-navigation/native';
 
 const passwordImg = require('../../assets/icons/llave.png');
-
 
 export default function ChangePassword() {
     const [password, setPassword] = useState("");
@@ -22,6 +21,7 @@ export default function ChangePassword() {
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
     const [showNotification, setShowNotification] = useState(false);
+    const navigation = useNavigation();
 
     const showMessage = (type, message) => {
         setModalType(type);
@@ -103,7 +103,7 @@ export default function ChangePassword() {
                         <BlueButton onPress={handleUpdate}>Confirmar</BlueButton>
                     </View>
 
-                    <PurpleButton>Cancelar</PurpleButton>
+                    <PurpleButton onPress={() => navigation.goBack()}>Cancelar</PurpleButton>
 
                 </View>
 

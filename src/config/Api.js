@@ -329,6 +329,8 @@ export const confirmInscription = async (token) => {
       token: token
     });
 
+    console.log(response);
+
     const { type, text } = response.data;
 
     if (type === 'ERROR' || type === 'WARNING') {
@@ -337,7 +339,7 @@ export const confirmInscription = async (token) => {
       customError.response = { data: response.data };
       throw customError;
     }
-
+    return response.data;
   } catch (error) {
 
     if (error.response && error.response.data) {

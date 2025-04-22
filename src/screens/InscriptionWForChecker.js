@@ -19,7 +19,7 @@ const jobImg = require('../../assets/icons/trabajo.png');
 const workPlaceImg = require('../../assets/icons/edificio-de-oficinas.png');
 const howImg = require('../../assets/icons/periodico.png');
 
-export default function InscriptionWForChecker({ route }) {
+export default function InscriptionForChecker({ route }) {
     const { activityId } = route.params;
 
     const [user, setUser] = useState({

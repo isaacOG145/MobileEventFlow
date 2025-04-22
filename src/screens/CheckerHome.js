@@ -74,8 +74,12 @@ export default function CheckerHome() {
     loadWorkshops();
   }, []);
 
-  const handleRegistration = (activityId) => {
-    navigation.navigate('Register', { activityId: activityId })
+  const handleRegistrationE = (activityId) => {
+    navigation.navigate('RegisterToEvent', { activityId: activityId })
+  }
+
+  const handleRegistrationW = (activityId) => {
+    navigation.navigate('RegisterToWorkshop', { activityId: activityId })
   }
 
 
@@ -95,7 +99,7 @@ export default function CheckerHome() {
             <ActivityCard
               key={index}
               activity={activity}
-              onPressBlue={() => handleRegistration(activity.id)}
+              onPressBlue={() => handleRegistrationE(activity.id)}
               textBlue="Inscribir usuario"
             />
           ))
@@ -112,7 +116,7 @@ export default function CheckerHome() {
             <ActivityCard
               key={index}
               activity={activity}
-              onPressBlue={() => handleRegistration(activity.id)}
+              onPressBlue={() => handleRegistrationW(activity.id)}
               textBlue="Inscribir usuario"
             />
           ))

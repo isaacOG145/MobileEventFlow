@@ -6,13 +6,14 @@ import ActivityCard from '../components/ActivityCard';
 import { ScrollView } from 'react-native-gesture-handler';
 import MessageModal from '../components/MessageModal';
 import { useNavigation } from '@react-navigation/native';
-import { getActivitiesForOwner, getUserProfile, getUserInfo } from '../config/Api';
+import { getEventsForOwner, getworkshopsForOwner, getUserProfile, getUserInfo } from '../config/Api';
 
 export default function CheckerHome() {
   const [showNotification, setShowNotification] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState('success');
   const [activities, setActivities] = useState([]);
+  const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
@@ -28,10 +29,10 @@ export default function CheckerHome() {
       const profile = await getUserProfile();
       const user = await getUserInfo(profile.userId);
       const boss = user.result.sentByUser.id;
-      const workshopsData = await getActivitiesForOwner(boss);
+      const eventsData = await getEventsForOwner(boss);
 
-      if (workshopsData.type === 'SUCCESS') {
-        setActivities(workshopsData.result);
+      if (eventsData.type === 'SUCCESS') {
+        setActivities(eventsData.result);
         setShowNotification(false); // Cierra el modal
       } else {
         showMessage('error', 'No se pudieron cargar las actividades');
@@ -41,12 +42,36 @@ export default function CheckerHome() {
       showMessage('error', 'Error al cargar las talleres');
     } finally {
       setLoading(false);
-      setShowNotification(false); 
+      setShowNotification(false);
+    }
+  };
+
+  const loadWorkshops = async () => {
+    try {
+      showMessage('loading', 'Cargando actividades.');
+      const profile = await getUserProfile();
+      const user = await getUserInfo(profile.userId);
+      const boss = user.result.sentByUser.id;
+      const workshopData = await getworkshopsForOwner(boss);
+
+      if (workshopData.type === 'SUCCESS') {
+        setWorkshops(workshopData.result);
+        setShowNotification(false); // Cierra el modal
+      } else {
+        showMessage('error', 'No se pudieron cargar las actividades');
+      }
+    } catch (error) {
+      console.log(error);
+      showMessage('error', 'Error al cargar las talleres');
+    } finally {
+      setLoading(false);
+      setShowNotification(false);
     }
   };
 
   useEffect(() => {
     loadData();
+    loadWorkshops();
   }, []);
 
   const handleRegistration = (activityId) => {
@@ -59,14 +84,31 @@ export default function CheckerHome() {
       <CustomHeader />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        >
+      >
 
-        <Text style={styles.title}>Actividades de tu encargado</Text>
+        <Text style={styles.title}>Eventos de tu encargado</Text>
 
         {loading ? (
           <Text style={styles.loadingText}>Cargando eventos y talleres...</Text>
         ) : (
           activities.map((activity, index) => (
+            <ActivityCard
+              key={index}
+              activity={activity}
+              onPressBlue={() => handleRegistration(activity.id)}
+              textBlue="Inscribir usuario"
+            />
+          ))
+        )}
+
+
+        <Text style={styles.title}>Talleres de tu encargado</Text>
+
+
+        {loading ? (
+          <Text style={styles.loadingText}>Cargando eventos y talleres...</Text>
+        ) : (
+          workshops.map((activity, index) => (
             <ActivityCard
               key={index}
               activity={activity}

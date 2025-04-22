@@ -48,6 +48,30 @@ export const getUserInfo = async (userId) => {
   }
 }
 
+export const getEventById = async (activityId) => {
+  try {
+    const response = await api.get(`/activity/findById/${activityId}`);
+    const { data } = response;
+
+    if (!data || data.type !== 'SUCCESS' || !data.result) {
+      throw new Error(data?.text || 'Respuesta inválida del servidor');
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error('Error en encontrar asignaciones:', error);
+
+    if (error.response) {
+      throw new Error(error.response.data?.text || error.response.data?.message || 'Error al obtener la asignación');
+    } else if (error.request) {
+      throw new Error('No se recibió respuesta del servidor');
+    } else {
+      throw new Error(error.message || 'Error al configurar la solicitud');
+    }
+  }
+}
+
 export const getAssingments = async (userId) => {
   try {
     const response = await api.get(`/activity/assignment/findByChecker/${userId}`);
@@ -112,10 +136,49 @@ export const getUserActivityInscription = async (userId, activityId) => {
   }
 };
 
-export const getActivitiesForOwner = async (userId) => {
+export const getUserActivities = async (activityId) => {
   try {
 
-    const response = await api.get(`/activity/findAllActive/byOwner/${userId}`)
+    const response = await api.get(`/user-activities/findByActivity/${activityId}`);
+    const { data } = response;
+
+    if (!data || data.type !== 'SUCCESS' || !data.result) {
+      throw new Error(data?.text || 'Respuesta inválida del servidor');
+    }
+
+  } catch (error) {
+    console.error('Error en encontrar asignaciones:', error);
+
+    if (error.response) {
+      throw new Error(error.response.data?.text || error.response.data?.message || 'Error al obtener la asignación');
+    } else if (error.request) {
+      throw new Error('No se recibió respuesta del servidor');
+    } else {
+      throw new Error(error.message || 'Error al configurar la solicitud');
+    }
+  }
+}
+
+export const getEventsForOwner = async (userId) => {
+  try {
+
+    const response = await api.get(`/activity/events/byOwner/${userId}`)
+
+    if (response.data.type === 'ERROR') {
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al obtener las inscripciones');
+  }
+}
+
+export const getworkshopsForOwner = async (userId) => {
+  try {
+
+    const response = await api.get(`/activity/workshops/byOwner/${userId}`)
 
     if (response.data.type === 'ERROR') {
       throw new Error(response.data.message);

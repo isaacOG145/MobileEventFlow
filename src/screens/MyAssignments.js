@@ -6,6 +6,7 @@ import { getAssingments, getUserProfile } from "../config/Api";
 import CustomHeader from '../components/CustomHeader';
 import ActivityCard from '../components/ActivityCard';
 import MessageModal from '../components/MessageModal';
+import { useNavigation } from '@react-navigation/native';
 
 export default function MyAssignments() {
     const [assignments, setAssignments] = useState([]);
@@ -13,6 +14,7 @@ export default function MyAssignments() {
     const [showNotification, setShowNotification] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
+    const navigation = useNavigation();
 
 
     const loadData = async () => {
@@ -43,8 +45,8 @@ export default function MyAssignments() {
         setShowNotification(true);
     };
 
-    const showDetails = () => {
-
+    const showDetails = (activityId) => {
+        navigation.navigate('AssignmentsDetails', { activityId: activityId })
     }
 
 
@@ -64,7 +66,7 @@ export default function MyAssignments() {
                             <ActivityCard
                                 key={index}
                                 activity={activity}
-                                onPressBlue={showDetails}
+                                onPressBlue={() => showDetails(activity.id)}
                                 textBlue="Ver detalles"
                             />
                         ))

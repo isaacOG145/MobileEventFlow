@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
 import { Spacing, Colors, fontSizes, BorderRadius, ModalStyles } from "../config/Styles";
 import { getUserActivityInscription, getUserProfile, cancelInscription } from "../config/Api";
 import { formatDate, formatTime } from "../utils/DateUtils";
@@ -79,25 +79,28 @@ export default function InscriptionDetails({ route }) {
 
     useEffect(() => {
         if (inscription?.activity) {
-            // Recogemos la fecha principal o, si es taller, la de fromActivity
-            const rawDate =
-                inscription.activity.date ??
-                inscription.activity.fromActivity?.date;
+            const rawDate = inscription.activity.date ?? inscription.activity.fromActivity?.date;
 
             if (rawDate) {
+                // Fecha actual
                 const today = new Date();
-                const eventDate = new Date(rawDate);
+                const todayString = today.toDateString();
 
-                const isSameDay =
-                    today.getFullYear() === eventDate.getFullYear() &&
-                    today.getMonth() === eventDate.getMonth() &&
-                    today.getDate() === eventDate.getDate();
+                // Fecha del evento (le sumamos 1 día para compensar la zona horaria)
+                const eventDate = new Date(rawDate);
+                eventDate.setDate(eventDate.getDate() + 1); // Agregamos un día
+                const eventDateString = eventDate.toDateString();
+
+                // Comparación
+                const isSameDay = todayString === eventDateString;
+
+                console.log('Fecha hoy:', todayString);
+                console.log('Fecha evento ajustada:', eventDateString);
+                console.log('¿Es hoy el evento?', isSameDay);
 
                 setIsEventToday(isSameDay);
             } else {
-                // No hay fecha; puede ser un caso inesperado
                 setIsEventToday(false);
-                console.warn("No se encontró fecha de evento en inscription.activity", inscription);
             }
         }
     }, [inscription]);
@@ -113,8 +116,8 @@ export default function InscriptionDetails({ route }) {
         if (!inscription) return '';
 
         return JSON.stringify({
-            token: inscription.token, // El token único que ya usas en el backend
-            eventName: inscription.activity.name,
+            token: inscription.token, 
+            eventName: inscription.activity.name || inscription.fromActivity.name,
             userName: `${inscription.user.name} ${inscription.user.lastName}`,
         });
     };

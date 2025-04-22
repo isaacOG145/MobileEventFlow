@@ -68,6 +68,8 @@ export default function MyAssignments() {
                                 activity={activity}
                                 onPressBlue={() => showDetails(activity.id)}
                                 textBlue="Ver detalles"
+                                onPressPurple={() => navigation.navigate('Scanner')}
+                                textPurple="Registrar QR"
                             />
                         ))
                     ) : (

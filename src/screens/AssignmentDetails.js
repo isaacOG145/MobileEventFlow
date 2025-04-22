@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginVertical: 20,
         textAlign: 'center',
-        color: Colors.primary,
+        color: Colors.textDark,
     },
     loadingText: {
         textAlign: 'center',

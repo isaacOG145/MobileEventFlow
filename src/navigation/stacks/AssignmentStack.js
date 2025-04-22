@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AssignmentDetails from '../../screens/AssignmentDetails';
 import MyAssignments from '../../screens/MyAssignments';
+import Scanner from '../../screens/Scanner';
 
 const Stack = createNativeStackNavigator();
 
@@ -10,6 +11,7 @@ export default function AssignmentStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Assignments" component={MyAssignments} />
       <Stack.Screen name="AssignmentsDetails" component={AssignmentDetails} />
+      <Stack.Screen name='Scanner' component={Scanner}/>
 
     </Stack.Navigator>
   );

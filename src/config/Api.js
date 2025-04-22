@@ -321,6 +321,40 @@ export const updateUserProfile = async (id, phone) => {
   }
 }
 
+export const confirmInscription = async (token) => {
+
+  try {
+
+    const response = await api.put('/user-activities/confirm', {
+      token: token
+    });
+
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+      // Lanza directamente el objeto de respuesta para que el handler lo reciba tal cual
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+  } catch (error) {
+
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+
+      const fallback = {
+        text: 'Error al confirmar',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
+  }
+}
+
 export const cancelInscription = async (inscriptionId) => {
   try {
 

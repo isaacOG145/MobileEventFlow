@@ -7,6 +7,8 @@ import Inscription from '../modals/Inscription';
 import CustomHeader from '../components/CustomHeader';
 import ActivityCard from '../components/ActivityCard';
 import MessageModal from '../components/MessageModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 
 export default function UserHome({ navigation }) {
@@ -41,12 +43,13 @@ export default function UserHome({ navigation }) {
   const handleRegistration = async (activityId) => {
     try {
       setIsRegistering(true);
+      setShowModal(false);
+      showMessage('loading', 'registrando');
       const user = await getUserProfile();
       await registerToWorkshop(user.userId, activityId);
       setTimeout(() => {
-        showMessage('success', '¡Inscripción exitosa!');
-        setShowModal(false);
-      }, 1500)
+        showMessage('success', '¡Inscripción exitosa!'); // 2. Luego muestra el mensaje
+      }, 300); // 3. Pequeño delay para asegurar cierre visual
 
       loadData();
 
@@ -55,8 +58,10 @@ export default function UserHome({ navigation }) {
       if (error.response) {
         console.log(error);
         const { text, type } = error.response.data;
-        showMessage(type.toLowerCase(), text);
         setShowModal(false);
+        setTimeout(() => {
+          showMessage(type.toLowerCase(), text);
+        }, 300);
       } else {
         showMessage('error', error.message);
         setShowModal(false);
@@ -77,14 +82,13 @@ export default function UserHome({ navigation }) {
     setShowNotification(true);
   };
 
-
   return (
     <View style={styles.container}>
       <CustomHeader />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        scrollEnabled={!showModal}
+        
       >
         <Text style={styles.title}>Talleres disponibles para ti</Text>
 
@@ -131,13 +135,20 @@ export default function UserHome({ navigation }) {
           </View>
         </View>
       )}
-
-      <MessageModal
+  <SafeAreaView>
+    <MessageModal
         show={showNotification}
+        type={modalType}
         message={modalMessage}
         onClose={() => setShowNotification(false)}
-        type={modalType}
       />
+  </SafeAreaView>
+      
+
+
+
+
+
     </View>
   );
 }

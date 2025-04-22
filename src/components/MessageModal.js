@@ -7,10 +7,10 @@ const errorImg = require('../../assets/icons/error.png');
 const alertImg = require('../../assets/icons/alert.png');
 const loadingImg = require('../../assets/icons/loading.png');
 
-const MessageModal = ({ 
-  show, 
-  message, 
-  onClose, 
+const MessageModal = ({
+  show,
+  message,
+  onClose,
   type = 'success',
   duration = 1500
 }) => {
@@ -42,7 +42,7 @@ const MessageModal = ({
   }, [show, type]);
 
   const getIcon = () => {
-    switch(type) {
+    switch (type) {
       case 'error': return errorImg;
       case 'warning': return alertImg;
       case 'loading': return loadingImg;
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    ...StyleSheet.absoluteFillObject,
   },
   content: {
     width: '80%',

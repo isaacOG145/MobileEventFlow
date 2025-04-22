@@ -6,7 +6,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}> {/* Envuelve todo aquí */}
+    <GestureHandlerRootView style={{ flex: 1 }}> 
       <AuthProvider>
         <AppNavigator />
       </AuthProvider>

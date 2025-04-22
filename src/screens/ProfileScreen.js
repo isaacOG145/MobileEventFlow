@@ -5,9 +5,9 @@ import CustomHeader from '../components/CustomHeader';
 import { ScrollView } from 'react-native-gesture-handler';
 import BlueButton from "../components/BlueButton";
 import PurpleButton from '../components/PurpleButton';
+import VioletButton from "../components/VioletButton";
 import { useNavigation } from '@react-navigation/native';
 import { getUserProfile, getUserInfo } from "../config/Api";
-import { formatDate } from "../utils/DateUtils";
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
@@ -38,7 +38,7 @@ export default function ProfileScreen() {
                 birthday: profile?.birthday || '',
                 address: profile?.address || '',
                 job: profile?.job || '',
-                workplace: profile?.workplace || ''
+                workplace: profile?.workPlace || ''
             });
 
         } catch (error) {
@@ -69,20 +69,20 @@ export default function ProfileScreen() {
         );
     };
 
-    function calculateAge(birthdateStr) {
+    const calculateAge = (birthdateStr) => {
         const today = new Date();
         const birthdate = new Date(birthdateStr);
         let age = today.getFullYear() - birthdate.getFullYear();
         const month = today.getMonth() - birthdate.getMonth();
-    
+
         // Ajuste si el cumpleaños aún no ha ocurrido este año
         if (month < 0 || (month === 0 && today.getDate() < birthdate.getDate())) {
             age--;
         }
-    
+
         return age;
     }
-    
+
     return (
         <View style={styles.container}>
             <CustomHeader />
@@ -99,18 +99,18 @@ export default function ProfileScreen() {
                     <Text style={styles.text}>{userData.email}</Text>
                     <Text style={styles.boldText}>Télefono</Text>
                     <Text style={styles.text}>{userData.cellphone}</Text>
-                    {renderField("Fecha de nacimiento", calculateAge(userData.birthday))}
+                    {renderField("Edad", calculateAge(userData.birthday))}
                     {renderField("Dirección", userData.address)}
                     {renderField("Profesión", userData.job)}
                     {renderField("Lugar de trabajo", userData.workplace)}
-                    {renderField("¿Cómo nos conociste?", userData.howFound)}
 
                     <View style={styles.buttonSpacing}>
                         <BlueButton onPress={handleEdit}>Editar perfil</BlueButton>
                     </View>
-
-                    <PurpleButton onPress={handleChangePassword}>Cambiar contraseña</PurpleButton>
-
+                    <View style={styles.buttonSpacing}>
+                        <VioletButton onPress={handleChangePassword}>Cambiar contraseña</VioletButton>
+                    </View>
+                    <PurpleButton >Eliminar cuenta</PurpleButton>
                 </View>
 
             </ScrollView>
@@ -173,6 +173,5 @@ const styles = StyleSheet.create({
         elevation: 5,
     }, buttonSpacing: {
         marginBottom: Spacing.margin.medium,
-        marginTop: Spacing.margin.medium
     },
 });

@@ -2,9 +2,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import InscriptionsStack from './stacks/InscriptionStack';
-import UserHomeStack from './stacks/UserHomeStack';
 import { StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import ProfileStack from './stacks/ProfileStack';
+import UserHome from '../screens/UserHome';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,7 +25,7 @@ export default function UserTabs({ navigation }) {
     >
       <Tab.Screen 
         name="Inicio" 
-        component={UserHomeStack} 
+        component={UserHome} 
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons 
@@ -84,8 +84,7 @@ export default function UserTabs({ navigation }) {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 60
-    ,
+    height: 60,
     paddingBottom: Platform.OS === 'ios' ? 20 : 10, 
     paddingTop: 5,
     flexDirection: 'row',

@@ -62,9 +62,9 @@ export const BorderRadius = {
     circle: 100
 };
 
-// Añade estos estilos de modal al final de tu archivo Styles.js
 export const ModalStyles = {
     overlay: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1000,

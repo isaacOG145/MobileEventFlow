@@ -87,11 +87,9 @@ export default function CheckerTabs({ navigation }) {
 const styles = StyleSheet.create({
   tabBar: {
     height: 60,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 10, // espacio seguro para iOS
+    paddingBottom: Platform.OS === 'ios' ? 20 : 10, 
     paddingTop: 5,
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
     backgroundColor: '#fff',
     borderTopWidth: 0.5,
     borderTopColor: '#ccc',

@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
-import { createDrawerNavigator, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import UserTabs from './UserTabs';
 import Logout from '../modals/Logout';
@@ -58,9 +58,9 @@ export default function UserDrawer() {
     return (
         <Drawer.Navigator
             drawerContent={(props) => (
-                <CustomDrawerContent 
-                    {...props} 
-                    userData={userData} 
+                <CustomDrawerContent
+                    {...props}
+                    userData={userData}
                     showModal={showModal}
                     setShowModal={setShowModal}
                     isProcessing={isProcessing}
@@ -94,15 +94,19 @@ export default function UserDrawer() {
 }
 
 const CustomDrawerContent = ({
-    userData, 
-    showModal, 
-    setShowModal, 
-    isProcessing, 
-    logout, 
+    userData,
+    showModal,
+    setShowModal,
+    isProcessing,
+    logout,
     ...props
 }) => {
     return (
-        <View style={styles.drawerContainer}>
+        <DrawerContentScrollView
+            {...props}
+            contentContainerStyle={{ flexGrow: 1, paddingTop: 0, margin: 0 }}
+            style={styles.scrollView}
+        >
             <View style={styles.headerContainer}>
                 <Image source={userFrame} style={styles.userImage} />
                 <View style={styles.userInfo}>
@@ -148,13 +152,15 @@ const CustomDrawerContent = ({
                     </View>
                 </View>
             )}
-        </View>
+        </DrawerContentScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    drawerContainer: {
+    scrollView: {
         flex: 1,
+        padding: 0,
+        margin: 0,
     },
     headerContainer: {
         paddingVertical: 20,

@@ -225,6 +225,40 @@ export const updatePassword = async (id, password) => {
   }
 }
 
+export const updateUserProfile = async (id, phone) => {
+  try {
+    const response = await api.put('/user/updateUser', {
+      id: id,
+      phone: phone
+    });
+
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+    return response.data;
+  } catch (error) {
+
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+
+      const fallback = {
+        text: 'Error al cambiar el telefono',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
+  }
+}
+
 export const cancelInscription = async (inscriptionId) => {
   try {
 

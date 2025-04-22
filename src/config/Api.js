@@ -115,7 +115,6 @@ export const getUserActivityInscription = async (userId, activityId) => {
       throw new Error(data?.text || 'Respuesta inválida del servidor');
     }
 
-    // Devolver el resultado
     return data.result;
   } catch (error) {
     console.error('Error en getUserActivityInscription:', error);
@@ -145,7 +144,7 @@ export const getUserActivities = async (activityId) => {
     if (!data || data.type !== 'SUCCESS' || !data.result) {
       throw new Error(data?.text || 'Respuesta inválida del servidor');
     }
-
+    return response.data;
   } catch (error) {
     console.error('Error en encontrar asignaciones:', error);
 

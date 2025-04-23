@@ -4,10 +4,14 @@ import CustomHeader from "../components/CustomHeader";
 import { ScrollView } from 'react-native-gesture-handler';
 import { BorderRadius, Colors, Spacing, fontSizes } from "../config/Styles";
 import { useNavigation } from '@react-navigation/native';
+import { registerToWorkshop, registerUser } from "../config/Api";
 import InputComponent from '../components/InputComponent';
 import SelectInputComponent from "../components/SelectInputComponent";
 import BirthDateComponent from "../components/BirthDateComponent";
 import BlueButton from "../components/BlueButton";
+import PurpleButton from "../components/PurpleButton";
+import MessageModal from "../components/MessageModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const userImg = require('../../assets/icons/user.png');
 const emailImg = require('../../assets/icons/sobres.png');
@@ -19,14 +23,18 @@ const jobImg = require('../../assets/icons/trabajo.png');
 const workPlaceImg = require('../../assets/icons/edificio-de-oficinas.png');
 const howImg = require('../../assets/icons/periodico.png');
 
-export default function InscriptionForChecker({ route }) {
+export default function InscriptionWForChecker({ route }) {
     const { activityId } = route.params;
+    const navigation = useNavigation();
+    const [showNotification, setShowNotification] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalType, setModalType] = useState('success');
 
     const [user, setUser] = useState({
         name: '',
         lastName: '',
         email: '',
-        cellphone: '',
+        phone: '',
         address: '',
         gender: '',
         birthday: '',
@@ -39,7 +47,7 @@ export default function InscriptionForChecker({ route }) {
         name: '',
         lastName: '',
         email: '',
-        cellphone: '',
+        phone: '',
         address: '',
         gender: '',
         birthday: '',
@@ -49,12 +57,79 @@ export default function InscriptionForChecker({ route }) {
     });
 
     const validateField = (field, value) => {
+        let error = '';
+
         if (!value.trim()) {
-            setErrors(prev => ({ ...prev, [field]: 'Este campo es requerido' }));
-            return false;
+            error = 'Este campo es requerido';
+        } else {
+            if (field === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    error = 'Correo electrónico inválido';
+                }
+            }
+
+            if (field === 'phone') {
+                const phoneRegex = /^\d{10}$/;
+                if (!phoneRegex.test(value)) {
+                    error = 'El teléfono debe tener 10 dígitos numéricos';
+                }
+            }
         }
-        setErrors(prev => ({ ...prev, [field]: '' }));
-        return true;
+
+        setErrors(prev => ({ ...prev, [field]: error }));
+        return error === '';
+    };
+
+
+    const handleRegister = async () => {
+        // Validar todos los campos
+        let isValid = true;
+        for (const field in user) {
+            const valid = validateField(field, user[field]);
+            if (!valid) isValid = false;
+        }
+
+        if (!isValid) {
+
+            return;
+        }
+
+        try {
+            const userResponse = await registerUser(user); 
+            
+            if (userResponse) {
+                const userId = userResponse.result.id;
+                console.log(user.id);
+                await registerToWorkshop(userId, activityId );
+                
+                showMessage('success', 'Usuario registrado y asignado al evento exitosamente');
+                
+                setUser({
+                    name: '',
+                    lastName: '',
+                    email: '',
+                    phone: '',
+                    address: '',
+                    gender: '',
+                    birthday: '',
+                    job: '',
+                    workPlace: '',
+                    howFound: '',
+                });
+            } else {
+                showMessage('error', 'No se pudo registrar el usuario');
+            }
+        } catch (error) {
+            console.error(error);
+            showMessage('error', 'Ocurrió un error durante el registro');
+        }
+    };
+
+    const showMessage = (type, message) => {
+        setModalType(type);
+        setModalMessage(message);
+        setShowNotification(true);
     };
 
     return (
@@ -104,12 +179,12 @@ export default function InscriptionForChecker({ route }) {
                     />
 
                     <InputComponent
-                        value={user.cellphone}
+                        value={user.phone}
                         onChangeText={(text) => {
-                            setUser(prev => ({ ...prev, cellphone: text }));
-                            validateField('cellphone', text);
+                            setUser(prev => ({ ...prev, phone: text }));
+                            validateField('phone', text);
                         }}
-                        error={errors.cellphone}
+                        error={errors.phone}
                         label="Telefono"
                         required={true}
                         imageSource={cellphoneImg}
@@ -199,9 +274,29 @@ export default function InscriptionForChecker({ route }) {
                         imageStyle={{ width: 20, height: 20 }}
                     />
 
-                    <BlueButton>Registrar</BlueButton>
+                    <View style={styles.spacing}>
+                        <BlueButton onPress={handleRegister}>
+                            Registrar
+                        </BlueButton>
+                    </View>
+                    <PurpleButton onPress={() => navigation.goBack()}>
+                        Regresar
+                    </PurpleButton>
+
+                    
+
+
                 </View>
             </ScrollView>
+            <SafeAreaView>
+                <MessageModal
+                    show={showNotification}
+                    message={modalMessage}
+                    onClose={() => setShowNotification(false)}
+                    type={modalType}
+                />
+            </SafeAreaView>
+
         </View>
     );
 }
@@ -230,5 +325,10 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: Colors.blue,
         marginBottom: Spacing.margin.betweenItems
+    },
+    spacing: {
+        marginTop: Spacing.margin.betweenItems,
+        marginBottom: Spacing.margin.betweenItems,
+        width: '100%'
     }
 });

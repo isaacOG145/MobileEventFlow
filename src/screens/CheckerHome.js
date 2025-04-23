@@ -75,11 +75,11 @@ export default function CheckerHome() {
   }, []);
 
   const handleRegistrationE = (activityId) => {
-    navigation.navigate('RegisterToEvent', { activityId: activityId })
+    navigation.navigate('RegistertoEvent', { activityId: activityId })
   }
 
   const handleRegistrationW = (activityId) => {
-    navigation.navigate('RegisterToWorkshop', { activityId: activityId })
+    navigation.navigate('RegistertoWorkshop', { activityId: activityId })
   }
 
 

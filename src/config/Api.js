@@ -52,10 +52,10 @@ export const getUserInfo = async (userId) => {
 }
 
 //libre para cualquiera
-export const registerUser = async ({ user }) => {
+export const registerUser = async (userData) => {
   try {
 
-    const response = await api.post('/user/saveUser', { user });
+    const response = await api.post('/user/saveUser', userData);
 
     const { type, text } = response.data;
 
@@ -64,7 +64,7 @@ export const registerUser = async ({ user }) => {
       customError.response = { data: response.data };
       throw customError;
     }
-
+    return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
       throw error;
@@ -278,6 +278,7 @@ export const getWorkshopsForUser = async (userId) => {
 };
 
 export const RegisterToEvent = async (userId, activityId) => {
+
   try {
     const response = await api.post('/user-activities/save', {
       userId,
@@ -307,6 +308,7 @@ export const RegisterToEvent = async (userId, activityId) => {
     }
   }
 };
+
 
 export const registerToWorkshop = async (userId, activityId) => {
   try {

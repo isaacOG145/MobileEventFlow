@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, Image } from "react-native";
 
 export default function BirthDateComponent({
@@ -12,29 +12,38 @@ export default function BirthDateComponent({
   imageSource = null,
   imageSize = 20,
 }) {
+  const [displayValue, setDisplayValue] = useState("");
   const [localError, setLocalError] = useState("");
 
+  useEffect(() => {
+    // Convierte de AAAA-MM-DD a DD-MM-AAAA al mostrar
+    if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const formatted = `${value.slice(8, 10)}-${value.slice(5, 7)}-${value.slice(0, 4)}`;
+      setDisplayValue(formatted);
+    } else {
+      setDisplayValue(value);
+    }
+  }, [value]);
+
   const handleChange = (text) => {
-    // Eliminar cualquier caracter que no sea número
     const cleanedText = text.replace(/[^0-9]/g, '');
-    
-    // Aplicar formato DD-MM-AAAA automáticamente
     let formattedText = cleanedText;
-    
+
     if (cleanedText.length > 2 && cleanedText.length <= 4) {
       formattedText = `${cleanedText.slice(0, 2)}-${cleanedText.slice(2)}`;
     } else if (cleanedText.length > 4) {
       formattedText = `${cleanedText.slice(0, 2)}-${cleanedText.slice(2, 4)}-${cleanedText.slice(4, 8)}`;
     }
-    
-    // Limitar a 10 caracteres (DD-MM-AAAA)
-    if (formattedText.length > 10) return;
-    
-    onChange(formattedText); // Esto actualiza el estado en el componente padre
 
-    // Validación completa cuando tenga 10 caracteres
+    if (formattedText.length > 10) return;
+
+    setDisplayValue(formattedText);
+
     if (formattedText.length === 10) {
       validateDate(formattedText);
+      const [day, month, year] = formattedText.split("-");
+      const backendFormat = `${year}-${month}-${day}`;
+      onChange(backendFormat); // Enviar al backend
     } else {
       setLocalError("");
     }
@@ -52,7 +61,6 @@ export default function BirthDateComponent({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Validar si la fecha es válida
     if (
       selectedDate.getDate() !== day ||
       selectedDate.getMonth() + 1 !== month ||
@@ -66,7 +74,7 @@ export default function BirthDateComponent({
       setLocalError("Mes inválido (1-12)");
       return;
     }
-    
+
     if (day < 1 || day > 31) {
       setLocalError("Día inválido (1-31)");
       return;
@@ -85,12 +93,12 @@ export default function BirthDateComponent({
       {label && (
         <View style={styles.labelContainer}>
           {imageSource && (
-            <Image 
-              source={imageSource} 
+            <Image
+              source={imageSource}
               style={[
-                styles.image, 
+                styles.image,
                 { width: imageSize, height: imageSize }
-              ]} 
+              ]}
             />
           )}
           <Text style={styles.label}>
@@ -99,21 +107,21 @@ export default function BirthDateComponent({
           </Text>
         </View>
       )}
-      
+
       <TextInput
         style={[
           styles.input,
           (localError || error) && styles.inputError,
           disabled && styles.inputDisabled,
         ]}
-        value={value}
+        value={displayValue}
         onChangeText={handleChange}
         keyboardType="number-pad"
         maxLength={10}
         placeholder={placeholder}
         editable={!disabled}
       />
-      
+
       {(localError || error) && (
         <Text style={styles.errorText}>{localError || error}</Text>
       )}

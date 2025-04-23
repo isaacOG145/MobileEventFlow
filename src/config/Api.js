@@ -24,6 +24,7 @@ api.interceptors.request.use(
 );
 
 // Funciones relacionadas con usuarios
+//Todo aquel con rol puede usar esto
 export const getUserProfile = async () => {
   const token = await getToken();
 
@@ -36,6 +37,7 @@ export const getUserProfile = async () => {
   return response.data; // contiene userId, email, expiration, role
 };
 
+//todo aquel con un rol puede usar esto
 export const getUserInfo = async (userId) => {
   try {
     const response = await api.get(`/user/findId/${userId}`);
@@ -49,6 +51,36 @@ export const getUserInfo = async (userId) => {
   }
 }
 
+//libre para cualquiera
+export const registerUser = async ({ user }) => {
+  try {
+
+    const response = await api.post('/user/saveUser', { user });
+
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+      const fallback = {
+        text: 'Error al guardar el usuario',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
+  }
+}
+
+//todo aquel con un rol puede usar esto
 export const updatePassword = async (id, password) => {
   try {
     const response = await api.put('/user/updatePassword', {
@@ -80,6 +112,7 @@ export const updatePassword = async (id, password) => {
   }
 }
 
+//todo aquel con un rol puede hacer esto
 export const updateUserProfile = async (id, phone) => {
   try {
     const response = await api.put('/user/updateUser', {
@@ -111,8 +144,9 @@ export const updateUserProfile = async (id, phone) => {
   }
 }
 
+//todo aquel con un rol puede usar esto
 export const cancelUser = async () => {
-  try{
+  try {
     const user = getUserProfile();
     const response = await api.put(`/user/change-status/${user.userId}`);
 
@@ -139,6 +173,7 @@ export const cancelUser = async () => {
     }
   }
 }
+
 
 // Funciones relacionadas con actividades/eventos
 export const getEventById = async (activityId) => {
@@ -239,6 +274,37 @@ export const getWorkshopsForUser = async (userId) => {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Error al obtener talleres');
+  }
+};
+
+export const RegisterToEvent = async (userId, activityId) => {
+  try {
+    const response = await api.post('/user-activities/save', {
+      userId,
+      activityId
+    });
+
+    const { type, text } = response.data;
+
+    if (type === 'ERROR' || type === 'WARNING') {
+      const customError = new Error(text);
+      customError.response = { data: response.data };
+      throw customError;
+    }
+
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error;
+    } else {
+      const fallback = {
+        text: 'Error al inscribirse al evento',
+        type: 'ERROR'
+      };
+      const fallbackError = new Error(fallback.text);
+      fallbackError.response = { data: fallback };
+      throw fallbackError;
+    }
   }
 };
 

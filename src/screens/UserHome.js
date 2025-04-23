@@ -21,19 +21,25 @@ export default function UserHome({ navigation }) {
   const [modalType, setModalType] = useState('success');
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [hasWorkshops, setHasWorkshops] = useState(true);
 
   const loadData = async () => {
     try {
-      showMessage('loading', 'Cargando talleres.');
+      showMessage('loading', 'Cargando talleres...');
       const user = await getUserProfile();
       const workshopsData = await getWorkshopsForUser(user.userId);
 
       if (workshopsData.type === 'SUCCESS') {
-        setShowNotification(false);
         setWorkshops(workshopsData.result);
+        setHasWorkshops(workshopsData.result.length > 0);
+        setShowNotification(false);
+      } else {
+        setHasWorkshops(false);
+        showMessage('warning', 'No hay talleres disponibles actualmente');
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      setHasWorkshops(false);
       showMessage('error', 'Error al cargar los talleres');
     } finally {
       setLoading(false);
@@ -88,24 +94,38 @@ export default function UserHome({ navigation }) {
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        
+
       >
         <Text style={styles.title}>Talleres disponibles para ti</Text>
 
         {loading ? (
           <Text style={styles.loadingText}>Cargando talleres...</Text>
         ) : (
-          workshops.map((activity, index) => (
-            <ActivityCard
-              key={index}
-              activity={activity}
-              onPressBlue={() => {
-                setSelectedActivityId(activity.id);
-                setShowModal(true);
-              }}
-              textBlue="Inscribirse"
-            />
-          ))
+          hasWorkshops ? (
+            workshops.map((activity, index) => (
+              <ActivityCard
+                key={index}
+                activity={activity}
+                onPressBlue={() => {
+                  setSelectedActivityId(activity.id);
+                  setShowModal(true);
+                }}
+                textBlue="Inscribirse"
+              />
+            ))
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No hay talleres disponibles en este momento</Text>
+              <Text style={styles.emptySubtext}>Por favor revisa más tarde</Text>
+
+              <TouchableOpacity
+                style={styles.refreshButton}
+                onPress={loadData}
+              >
+                <Text style={styles.refreshText}>Reintentar</Text>
+              </TouchableOpacity>
+            </View>
+          )
         )}
       </ScrollView>
 
@@ -135,15 +155,15 @@ export default function UserHome({ navigation }) {
           </View>
         </View>
       )}
-  <SafeAreaView>
-    <MessageModal
-        show={showNotification}
-        type={modalType}
-        message={modalMessage}
-        onClose={() => setShowNotification(false)}
-      />
-  </SafeAreaView>
-      
+      <SafeAreaView>
+        <MessageModal
+          show={showNotification}
+          type={modalType}
+          message={modalMessage}
+          onClose={() => setShowNotification(false)}
+        />
+      </SafeAreaView>
+
 
 
 

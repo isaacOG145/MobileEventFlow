@@ -18,6 +18,8 @@ export default function UpdateProfile() {
     const [modalMessage, setModalMessage] = useState("");
     const [modalType, setModalType] = useState('success');
     const [showNotification, setShowNotification] = useState(false);
+    const [errors, setErrors] = useState({});
+
     const navigation = useNavigation();
 
     const fetchUserData = async () => {

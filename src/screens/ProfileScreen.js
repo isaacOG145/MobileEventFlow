@@ -60,10 +60,10 @@ export default function ProfileScreen() {
     }, []);
 
     const handleEdit = () => {
-        navigation.navigate('UpdateProfile')
+        navigation.navigate('UpdateProfile');
     }
     const handleChangePassword = () => {
-        navigation.navigate('ChangePassword')
+        navigation.navigate('ChangePassword');
     }
 
     const handleDelete = async () => {

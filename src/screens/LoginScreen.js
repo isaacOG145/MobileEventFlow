@@ -82,6 +82,10 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const handlePassword = () =>{
+    navigation.navigate('RequestCode');
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -127,6 +131,7 @@ export default function LoginScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.linkContainer}
+            onPress={handlePassword}
           >
             <Text style={styles.link}>¿Has olvidado tu contraseña?</Text>
           </TouchableOpacity>

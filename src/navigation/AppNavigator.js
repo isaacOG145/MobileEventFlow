@@ -8,6 +8,7 @@ import LoadingScreen from '../screens/LoadingScreen';
 import UserDrawer from './DrawerNavigation';
 import CheckerDrawer from './CheckerDrawer';
 import AdminScreen from '../screens/AdminScreen';
+import RequestCode from '../screens/RequestCode';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +33,7 @@ export default function AppNavigator() {
           <Stack.Screen name="adminScreen" component={AdminScreen}/>
         )}
         
-        
+        <Stack.Screen name="RequestCode" component={RequestCode}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

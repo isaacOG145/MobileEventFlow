@@ -144,33 +144,22 @@ export const updateUserProfile = async (id, phone) => {
   }
 }
 
-//todo aquel con un rol puede usar esto
-export const cancelUser = async () => {
+export const cancelUser = async (userId) => {
   try {
-    const user = getUserProfile();
-    const response = await api.put(`/user/change-status/${user.userId}`);
+    const response = await api.put(`/user/change-status/${userId}`);
 
     const { type, text } = response.data;
 
     if (type === 'ERROR' || type === 'WARNING') {
-      const customError = new Error(text);
-      customError.response = { data: response.data };
-      throw customError;
+      const error = new Error(text);
+      error.response = response;
+      throw error;
     }
 
     return response.data;
   } catch (error) {
-    if (error.response && error.response.data) {
-      throw error;
-    } else {
-      const fallback = {
-        text: 'Error al borrar la cuenta ',
-        type: 'ERROR'
-      };
-      const fallbackError = new Error(fallback.text);
-      fallbackError.response = { data: fallback };
-      throw fallbackError;
-    }
+    console.error('Error deleting account:', error);
+    throw error; // Propaga el error para manejarlo en el componente
   }
 }
 

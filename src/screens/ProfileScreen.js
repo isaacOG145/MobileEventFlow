@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, StyleSheet,TouchableOpacity,
+    Dimensions } from 'react-native';
 import { Colors, fontSizes, ModalStyles, Spacing } from '../config/Styles';
 import CustomHeader from '../components/CustomHeader';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -7,10 +8,16 @@ import BlueButton from "../components/BlueButton";
 import PurpleButton from '../components/PurpleButton';
 import VioletButton from "../components/VioletButton";
 import { useNavigation } from '@react-navigation/native';
-import { getUserProfile, getUserInfo } from "../config/Api";
+import { getUserProfile, getUserInfo, cancelUser } from "../config/Api";
+import DeleteAccount from '../modals/DeleteAccount';
+import { AuthContext } from '../context/AuthContext';
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
+    const [showModal, setShowModal] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const { logout } = useContext(AuthContext);
+    const { height, width } = Dimensions.get('window');
     const [userData, setUserData] = useState({
         name: '',
         lastName: '',
@@ -57,6 +64,23 @@ export default function ProfileScreen() {
     }
     const handleChangePassword = () => {
         navigation.navigate('ChangePassword')
+    }
+
+    const handleDelete = async () => {
+        try {
+            setIsProcessing(true);
+            const user = await getUserProfile();
+            const response = await cancelUser(user.userId);
+
+            if (response.type == "SUCCESS") {
+                await logout();
+                setIsProcessing(false);
+                setShowModal(false);
+            }
+
+        } catch (error) {
+            console.error('Error cancelando:', error.message);
+        }
     }
 
     const renderField = (label, value) => {
@@ -110,10 +134,32 @@ export default function ProfileScreen() {
                     <View style={styles.buttonSpacing}>
                         <VioletButton onPress={handleChangePassword}>Cambiar contraseña</VioletButton>
                     </View>
-                    <PurpleButton >Eliminar cuenta</PurpleButton>
+                    <PurpleButton onPress={() => setShowModal(true)}>Eliminar cuenta</PurpleButton>
                 </View>
 
             </ScrollView>
+
+            {showModal && (
+                <View style={[ModalStyles.overlay, styles.cover]}>
+                    <TouchableOpacity
+                        style={ModalStyles.overlayTouchable}
+                        activeOpacity={1}
+                        onPress={() => !isProcessing && setShowModal(false)}
+                    />
+                    <View style={[ModalStyles.container, {
+                        maxHeight: height * 0.7,
+                        width: width * 0.8
+                    }]}>
+                        <View style={ModalStyles.content}>
+                            <DeleteAccount
+                                onCancel={() => !isProcessing && setShowModal(false)}
+                                onConfirm={handleDelete}
+                                isProcessing={isProcessing}
+                            />
+                        </View>
+                    </View>
+                </View>
+            )}
         </View>
     )
 }
